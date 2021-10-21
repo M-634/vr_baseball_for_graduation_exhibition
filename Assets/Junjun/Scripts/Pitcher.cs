@@ -11,21 +11,28 @@ namespace Junjun
     {
         /// <summary>ピッチャーのアニメーション</summary>
         [SerializeField] Animator m_anim;
+
         /// <summary>ボールのオブジェクト</summary>
         [SerializeField] GameObject m_ball;
+        /// <summary>ワンゲーム当たりの弾数制限</summary>
+        [SerializeField] int m_ballLimit = 30;
         /// <summary>ボールを投げる位置</summary>
         [SerializeField] GameObject m_throwPos;
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (m_ballLimit != 0)
             {
-                m_anim.SetTrigger("Throw");
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    m_anim.SetTrigger("Throw");
+                }
             }
         }
 
         public void Throw()
         {
+            m_ballLimit -= 1;
             m_ball.transform.position = m_throwPos.transform.position;
             m_ball.gameObject.SetActive(true);
         }
