@@ -23,6 +23,8 @@ public class Ball : MonoBehaviour
 
     /// <summary>ストレートの力の方向</summary>
     [SerializeField] Vector3 m_straightDirection = new Vector3(0f, 0.2f, 1.0f);
+    /// <summary>高速ストレートの力の方向</summary>
+    [SerializeField] Vector3 m_highSpeedStraightDirection = new Vector3(0f, 0.1f, 3.0f);
     /// <summary>カーブの最初の力の方向</summary>
     [SerializeField] Vector3 m_curveDirection = new Vector3(0.05f, 0.25f, 0f);
     /// <summary>カーブの変化させるときに加える力の方向</summary>
@@ -85,6 +87,9 @@ public class Ball : MonoBehaviour
                 m_rb.AddForceAtPosition(m_changeUpDirection * m_changePower, m_catcherPos.transform.position);
                 m_changeTime = 0.6f;
                 break;
+            case BallType.HighSpeedStraight:
+                m_rb.AddForceAtPosition(m_highSpeedStraightDirection * m_speed, m_catcherPos.transform.position);
+                break;
             default:
                 break;
         }
@@ -127,5 +132,6 @@ public enum BallType
     Shoot = 3,
     Fork = 4,
     Sinker = 5,
-    ChangeUp = 6
+    ChangeUp = 6,
+    HighSpeedStraight = 7
 }
