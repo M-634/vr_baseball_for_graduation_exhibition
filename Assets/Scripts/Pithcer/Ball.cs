@@ -12,6 +12,8 @@ public class Ball : MonoBehaviour
     /// <summary>ボールを投げ込む位置</summary>
     [SerializeField] GameObject m_catcherPos;
 
+    [SerializeField] GameObject m_throwPos;
+
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
     /// <summary>ボールのスピード</summary>
@@ -44,7 +46,18 @@ public class Ball : MonoBehaviour
     /// <summary>カットボール変化させるときに加える力の方向</summary>
     [SerializeField] Vector3 m_cutBallDirection = new Vector3(-0.8f, 0f, 0f);
 
+    #region Curve
     bool m_isCurve = false;
+
+    float m_baseLength;
+    float m_arrivalTime;
+    float m_fallDistance;
+    Vector3 m_upPos;
+
+    float m_angle;
+    float m_hypotenuseSpeed;
+
+    #endregion
 
     Rigidbody m_rb;
 
@@ -71,7 +84,24 @@ public class Ball : MonoBehaviour
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.Curve:
-                m_isCurve = true;
+                m_baseLength = m_catcherPos.transform.position.z - transform.position.z;
+                m_arrivalTime = m_baseLength / m_speed;
+                m_fallDistance = Mathf.Abs(0.5f * Physics.gravity.y * m_arrivalTime * m_arrivalTime);
+                m_upPos = m_catcherPos.transform.position  + Vector3.up * m_fallDistance;
+                //　斜辺の長さを計算
+                var hypotenuse = Vector3.Distance(m_throwPos.transform.position, m_upPos);
+                Debug.Log(hypotenuse);
+                //　角度を計算
+                m_angle = -Mathf.Acos((Mathf.Pow(hypotenuse, 2) + Mathf.Pow(m_baseLength, 2) - Mathf.Pow(m_fallDistance, 2)) / (2 * hypotenuse * m_baseLength));
+                //　一旦攻撃対象の方を見る
+                transform.LookAt(m_catcherPos.transform.position);
+                //　砲台の向きを変える
+                transform.Rotate(Vector3.right, m_angle * Mathf.Rad2Deg, Space.Self);
+                //　横軸のspeedから斜め方向の速さを計算
+                m_hypotenuseSpeed = hypotenuse / m_arrivalTime;
+
+                //　Rigidbodyに力を加える
+                m_rb.AddForce(m_rb.mass * transform.forward * m_hypotenuseSpeed, ForceMode.Impulse);
                 //m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
                 //yield return new WaitForSeconds(m_changeTime);
                 //m_rb.AddForceAtPosition(m_changeCurveDirection * m_changePower, m_catcherPos.transform.position);
