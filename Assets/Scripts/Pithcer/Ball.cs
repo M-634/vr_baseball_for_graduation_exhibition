@@ -41,8 +41,21 @@ public class Ball : MonoBehaviour
     [SerializeField] Vector3 m_changeUpDirection = new Vector3(0f, -0.1f, -1.5f);
     /// <summary>ライズボール変化させるときに加える力の方向</summary>
     [SerializeField] Vector3 m_rizeBallDirection = new Vector3(0f, 0.8f, 3f);
+    /// <summary>カットボール変化させるときに加える力の方向</summary>
+    [SerializeField] Vector3 m_cutBallDirection = new Vector3(-0.8f, 0f, 0f);
+
+    bool m_isCurve = false;
 
     Rigidbody m_rb;
+
+    private void Update()
+    {
+        if (m_isCurve)
+        {
+            float sin = Mathf.Sin(Time.time);
+            transform.position = new Vector3(sin, sin, 0);
+        }
+    }
 
     /// <summary>
     /// 呼ばれた瞬間にミットめがけて飛んでいく
@@ -58,9 +71,10 @@ public class Ball : MonoBehaviour
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.Curve:
-                m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
-                yield return new WaitForSeconds(m_changeTime);
-                m_rb.AddForceAtPosition(m_changeCurveDirection * m_changePower, m_catcherPos.transform.position);
+                m_isCurve = true;
+                //m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
+                //yield return new WaitForSeconds(m_changeTime);
+                //m_rb.AddForceAtPosition(m_changeCurveDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Slider:
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
@@ -96,6 +110,11 @@ public class Ball : MonoBehaviour
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_rizeBallDirection * m_changePower, m_catcherPos.transform.position);
+                break;
+            case BallType.CutBall:
+                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.AddForceAtPosition(m_cutBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             default:
                 break;
@@ -141,5 +160,6 @@ public enum BallType
     Sinker = 5,
     ChangeUp = 6,
     HighSpeedStraight = 7,
-    RizeBall = 8
+    RizeBall = 8,
+    CutBall = 9
 }
