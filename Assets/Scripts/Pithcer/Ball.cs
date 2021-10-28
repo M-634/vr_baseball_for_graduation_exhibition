@@ -39,6 +39,8 @@ public class Ball : MonoBehaviour
     [SerializeField] Vector3 m_sinkerDirection = new Vector3(1.0f, -0.8f, 0f);
     /// <summary>チェンジアップ変化させるときに加える力の方向</summary>
     [SerializeField] Vector3 m_changeUpDirection = new Vector3(0f, -0.1f, -1.5f);
+    /// <summary>ライズボール変化させるときに加える力の方向</summary>
+    [SerializeField] Vector3 m_rizeBallDirection = new Vector3(0f, 0.8f, 3f);
 
     Rigidbody m_rb;
 
@@ -90,6 +92,11 @@ public class Ball : MonoBehaviour
             case BallType.HighSpeedStraight:
                 m_rb.AddForceAtPosition(m_highSpeedStraightDirection * m_speed, m_catcherPos.transform.position);
                 break;
+            case BallType.RizeBall:
+                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.AddForceAtPosition(m_rizeBallDirection * m_changePower, m_catcherPos.transform.position);
+                break;
             default:
                 break;
         }
@@ -133,5 +140,6 @@ public enum BallType
     Fork = 4,
     Sinker = 5,
     ChangeUp = 6,
-    HighSpeedStraight = 7
+    HighSpeedStraight = 7,
+    RizeBall = 8
 }
