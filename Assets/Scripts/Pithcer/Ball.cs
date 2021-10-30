@@ -28,9 +28,9 @@ public class Ball : MonoBehaviour
     /// <summary>高速ストレートの力の方向</summary>
     [SerializeField] Vector3 m_highSpeedStraightDirection = new Vector3(0f, 0.1f, 3.0f);
     /// <summary>カーブの最初の力の方向</summary>
-    [SerializeField] Vector3 m_curveDirection = new Vector3(0.05f, 0.25f, 0f);
+    [SerializeField] Vector3 m_curveDirection = new Vector3(0.18f, 0.35f, 0f);
     /// <summary>カーブの変化させるときに加える力の方向</summary>
-    [SerializeField] Vector3 m_changeCurveDirection = new Vector3(-0.1f, -1.0f, 0f);
+    [SerializeField] Vector3 m_changeCurveDirection = new Vector3(-9f, -7f, 0.2f);
     /// <summary>スライダー変化させるときに加える力の方向</summary>
     [SerializeField] Vector3 m_sliderDirection = new Vector3(-1.0f, -0.8f, 0f);
     /// <summary>シュート変化させるときに加える力の方向</summary>
@@ -46,27 +46,15 @@ public class Ball : MonoBehaviour
     /// <summary>カットボール変化させるときに加える力の方向</summary>
     [SerializeField] Vector3 m_cutBallDirection = new Vector3(-0.8f, 0f, 0f);
 
-    #region Curve
     bool m_isCurve = false;
-
-    float m_baseLength;
-    float m_arrivalTime;
-    float m_fallDistance;
-    Vector3 m_upPos;
-
-    float m_angle;
-    float m_hypotenuseSpeed;
-
-    #endregion
 
     Rigidbody m_rb;
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (m_isCurve)
         {
-            float sin = Mathf.Sin(Time.time);
-            transform.position = new Vector3(sin, sin, 0);
+            m_rb.AddForceAtPosition(m_changeCurveDirection * 1, m_catcherPos.transform.position);
         }
     }
 
@@ -84,28 +72,8 @@ public class Ball : MonoBehaviour
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.Curve:
-                m_baseLength = m_catcherPos.transform.position.z - transform.position.z;
-                m_arrivalTime = m_baseLength / m_speed;
-                m_fallDistance = Mathf.Abs(0.5f * Physics.gravity.y * m_arrivalTime * m_arrivalTime);
-                m_upPos = m_catcherPos.transform.position + Vector3.up * m_fallDistance;
-                //　斜辺の長さを計算
-                var hypotenuse = Vector3.Distance(m_throwPos.transform.position, m_upPos);
-                Debug.Log(hypotenuse);
-                //　角度を計算
-                m_angle = -Mathf.Acos((Mathf.Pow(hypotenuse, 2) + Mathf.Pow(m_baseLength, 2) - Mathf.Pow(m_fallDistance, 2)) / (2 * hypotenuse * m_baseLength));
-                //　一旦攻撃対象の方を見る
-                transform.LookAt(m_catcherPos.transform.position);
-                //　砲台の向きを変える
-                transform.Rotate(Vector3.right, m_angle * Mathf.Rad2Deg, Space.Self);
-                //　横軸のspeedから斜め方向の速さを計算
-                m_hypotenuseSpeed = hypotenuse / m_arrivalTime;
-
-                //　Rigidbodyに力を加える
-                m_rb.AddForce(m_rb.mass * transform.forward * m_hypotenuseSpeed, ForceMode.Impulse);
-
-                //m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
-                //yield return new WaitForSeconds(m_changeTime);
-                //m_rb.AddForceAtPosition(m_changeCurveDirection * m_changePower, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
+                m_isCurve = true;
                 break;
             case BallType.Slider:
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
@@ -150,7 +118,6 @@ public class Ball : MonoBehaviour
             default:
                 break;
         }
-
     }
 
     /// <summary>
@@ -177,6 +144,7 @@ public class Ball : MonoBehaviour
             m_rb = GetComponent<Rigidbody>();
         }
 
+        m_isCurve = false;
         StartCoroutine(BallMove());
     }
 }
