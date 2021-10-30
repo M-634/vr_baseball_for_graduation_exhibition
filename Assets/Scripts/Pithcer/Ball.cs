@@ -87,7 +87,7 @@ public class Ball : MonoBehaviour
                 m_baseLength = m_catcherPos.transform.position.z - transform.position.z;
                 m_arrivalTime = m_baseLength / m_speed;
                 m_fallDistance = Mathf.Abs(0.5f * Physics.gravity.y * m_arrivalTime * m_arrivalTime);
-                m_upPos = m_catcherPos.transform.position  + Vector3.up * m_fallDistance;
+                m_upPos = m_catcherPos.transform.position + Vector3.up * m_fallDistance;
                 //Å@éŒï”ÇÃí∑Ç≥ÇåvéZ
                 var hypotenuse = Vector3.Distance(m_throwPos.transform.position, m_upPos);
                 Debug.Log(hypotenuse);
@@ -102,6 +102,7 @@ public class Ball : MonoBehaviour
 
                 //Å@RigidbodyÇ…óÕÇâ¡Ç¶ÇÈ
                 m_rb.AddForce(m_rb.mass * transform.forward * m_hypotenuseSpeed, ForceMode.Impulse);
+
                 //m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
                 //yield return new WaitForSeconds(m_changeTime);
                 //m_rb.AddForceAtPosition(m_changeCurveDirection * m_changePower, m_catcherPos.transform.position);
