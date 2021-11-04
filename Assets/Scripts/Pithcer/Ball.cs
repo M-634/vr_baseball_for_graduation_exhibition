@@ -12,17 +12,16 @@ public class Ball : MonoBehaviour
     /// <summary>ボールを投げ込む位置</summary>
     [SerializeField] GameObject m_catcherPos;
 
-    [SerializeField] GameObject m_throwPos;
-
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
     /// <summary>ボールのスピード</summary>
     [SerializeField] float m_speed;
     /// <summary>変化させるときの力</summary>
-    [SerializeField] float m_changePower = 100;
+    [SerializeField] float m_changePower = 80;
     /// <summary>変化させるタイミング</summary>
     [SerializeField] float m_changeTime = 0.6f;
 
+    #region Ball Type Direction
     /// <summary>ストレートの力の方向</summary>
     [SerializeField] Vector3 m_straightDirection = new Vector3(0f, 0.2f, 1.0f);
     /// <summary>高速ストレートの力の方向</summary>
@@ -48,6 +47,8 @@ public class Ball : MonoBehaviour
 
     bool m_isCurve = false;
 
+    #endregion
+
     Rigidbody m_rb;
 
     private void FixedUpdate()
@@ -65,6 +66,7 @@ public class Ball : MonoBehaviour
     {
         m_rb.velocity = Vector3.zero;
         transform.rotation = new Quaternion(0, 0, 0, 0);
+        m_straightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.4f, 1.0f);
 
         switch (m_ballType)
         {
