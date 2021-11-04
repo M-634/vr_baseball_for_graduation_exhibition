@@ -27,6 +27,7 @@ public class Pitcher : MonoBehaviour
         if (m_ballLimit != 0)
         {
             m_ballLimit -= 1;
+            PitcherUI.Instance.m_currentBallNum.text = m_ballLimit.ToString();
             m_ball.transform.position = m_throwPos.transform.position;
             m_ball.gameObject.SetActive(true);
         }

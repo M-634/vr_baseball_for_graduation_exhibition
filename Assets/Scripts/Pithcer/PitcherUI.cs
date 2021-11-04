@@ -12,6 +12,8 @@ public class PitcherUI : MonoBehaviour
 {
     /// <summaryボールの高さ調整のSlider</summary>
     [SerializeField] public Slider m_heightAdjust;
+    /// <summary>現在の残りボール数</summary>
+    [SerializeField] public Text m_currentBallNum;
 
     private static PitcherUI m_instance;
     public static PitcherUI Instance
