@@ -34,7 +34,7 @@ public class PitcherUI : MonoBehaviour
 
     private void Start()
     {
-        m_heightAdjust.value = 0.5f;
+        m_heightAdjust.value = 0f;
     }
 
     /// <summary>
@@ -43,10 +43,6 @@ public class PitcherUI : MonoBehaviour
     /// <param name="adjustNum"></param>
     public void AdjustHeight(float adjustNum)
     {
-        if (m_heightAdjust.value == 0 || m_heightAdjust.value == 1)
-        {
-            return;
-        }
-        m_heightAdjust.value -= adjustNum;
+        m_heightAdjust.value += adjustNum;
     }
 }

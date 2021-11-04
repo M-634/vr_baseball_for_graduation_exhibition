@@ -66,7 +66,7 @@ public class Ball : MonoBehaviour
     {
         m_rb.velocity = Vector3.zero;
         transform.rotation = new Quaternion(0, 0, 0, 0);
-        m_straightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.4f, 1.0f);
+        m_straightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.025f + 0.2f, 1.0f);
 
         switch (m_ballType)
         {
@@ -74,6 +74,7 @@ public class Ball : MonoBehaviour
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.Curve:
+                m_curveDirection = new Vector3(0.18f, PitcherUI.Instance.m_heightAdjust.value * 0.02f + 0.36f, 1.0f);
                 m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
                 m_isCurve = true;
                 break;
@@ -105,6 +106,7 @@ public class Ball : MonoBehaviour
                 m_changeTime = 0.6f;
                 break;
             case BallType.HighSpeedStraight:
+                m_highSpeedStraightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.03f + 0.12f, 1.5f);
                 m_rb.AddForceAtPosition(m_highSpeedStraightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.RizeBall:
