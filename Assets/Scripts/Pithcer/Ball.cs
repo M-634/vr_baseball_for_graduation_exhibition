@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 /// <summary>
@@ -49,6 +50,9 @@ public class Ball : MonoBehaviour
 
     #endregion
 
+    /// <summary>投げている球種を表示するテキスト</summary>
+    [SerializeField] Text m_ballTypeText;
+
     Rigidbody m_rb;
 
     private void FixedUpdate()
@@ -71,34 +75,41 @@ public class Ball : MonoBehaviour
         switch (m_ballType)
         {
             case BallType.Straight:
+                m_ballTypeText.text = "ストレート";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.Curve:
+                m_ballTypeText.text = "カーブ";
                 m_curveDirection = new Vector3(0.18f, PitcherUI.Instance.m_heightAdjust.value * 0.02f + 0.36f, 1.0f);
                 m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
                 m_isCurve = true;
                 break;
             case BallType.Slider:
+                m_ballTypeText.text = "スライダー";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_sliderDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Shoot:
+                m_ballTypeText.text = "シュート";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_shootDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Fork:
+                m_ballTypeText.text = "フォーク";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_forkDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Sinker:
+                m_ballTypeText.text = "シンカー";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_sinkerDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.ChangeUp:
+                m_ballTypeText.text = "チェンジアップ";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 m_changeTime = 0.2f;
                 yield return new WaitForSeconds(m_changeTime);
@@ -106,15 +117,18 @@ public class Ball : MonoBehaviour
                 m_changeTime = 0.6f;
                 break;
             case BallType.HighSpeedStraight:
+                m_ballTypeText.text = "速いストレート";
                 m_highSpeedStraightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.03f + 0.12f, 1.5f);
                 m_rb.AddForceAtPosition(m_highSpeedStraightDirection * m_speed, m_catcherPos.transform.position);
                 break;
             case BallType.RizeBall:
+                m_ballTypeText.text = "ライズボール";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_rizeBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.CutBall:
+                m_ballTypeText.text = "カットボール";
                 m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_cutBallDirection * m_changePower, m_catcherPos.transform.position);

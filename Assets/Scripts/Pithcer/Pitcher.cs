@@ -28,6 +28,11 @@ public class Pitcher : MonoBehaviour
 
     private void Start()
     {
+        if (m_type == DevelopType.Debug)
+        {
+            m_ballLimit = 9999;
+            PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
+        }
         StartCoroutine(ThrowInterval());
         m_ball = m_ball.GetComponent<Ball>();
     }
@@ -36,6 +41,11 @@ public class Pitcher : MonoBehaviour
     {
         while (true)
         {
+            if (m_ballLimit == 0)
+            {
+                StopCoroutine(ThrowInterval());
+                break;
+            }
             yield return new WaitForSeconds(m_throwIntervalTime);
             if (m_type == DevelopType.Debug)
             {
@@ -45,7 +55,11 @@ public class Pitcher : MonoBehaviour
             {
                 m_ballType = Random.Range(0, 9);
             }
-            
+
+            // アニメーションのせいで位置がずれまくるので補正
+            transform.rotation = new Quaternion(0, 0, 0, 0);
+            transform.position = new Vector3(0, 0, 0);
+
             m_ball.ChangeBallType(m_ballType);
             m_anim.SetTrigger("Throw");
         }
