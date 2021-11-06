@@ -11,7 +11,6 @@ public class Pitcher : MonoBehaviour
     /// <summary>ピッチャーのアニメーション</summary>
     [SerializeField] Animator m_anim;
 
-
     /// <summary>ボールのオブジェクト</summary>
     [SerializeField] Ball m_ball;
     /// <summary>ワンゲーム当たりの弾数制限</summary>
@@ -37,6 +36,10 @@ public class Pitcher : MonoBehaviour
         m_ball = m_ball.GetComponent<Ball>();
     }
 
+    /// <summary>
+    /// 投球間隔をはかるコルーチン
+    /// </summary>
+    /// <returns></returns>
     IEnumerator ThrowInterval()
     {
         while (true)
@@ -53,7 +56,7 @@ public class Pitcher : MonoBehaviour
             }
             else
             {
-                m_ballType = Random.Range(0, 9);
+                m_ballType = Random.Range(0, 10);
             }
 
             // アニメーションのせいで位置がずれまくるので補正
@@ -80,6 +83,9 @@ public class Pitcher : MonoBehaviour
     }
 }
 
+/// <summary>
+/// 開発タイプ
+/// </summary>
 public enum DevelopType
 {
     Debug,
