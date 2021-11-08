@@ -29,8 +29,15 @@ public class Ball : MonoBehaviour
     [SerializeField] GameObject m_throwPos;
     /// <summary>スピードの計測位置</summary>
     [SerializeField] GameObject m_speedGun;
+
+    /// <summary>Rayを飛ばす距離（1fでいい感じ） </summary>
+    [SerializeField] float hitDistance = 1f;
     /// <summary>到達時間</summary>
     float m_time;
+
+    Vector3 m_previousPos;
+
+    bool onHit;
 
     #region Ball Type Direction
     /// <summary>ストレートの力の方向</summary>
@@ -65,12 +72,49 @@ public class Ball : MonoBehaviour
 
     Rigidbody m_rb;
 
+    float m_hitTime;
+
+    public event Action OnThrowAction = default;
+
+    [SerializeField] TrailRenderer m_ballTrail;
+
+    private void Update()
+    {
+        if (!onHit) return;
+
+        if (Time.time - m_hitTime > 2f)
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
     private void FixedUpdate()
     {
         if (m_isCurve)
         {
             m_rb.AddForceAtPosition(m_changeCurveDirection * 1, m_catcherPos.transform.position);
         }
+
+        HitCheck();
+    }
+
+    /// <summary>
+    /// マイフレーム(1/90f)ごとにRayを飛ばして当たり判定をする関数
+    /// </summary>
+    private void HitCheck()
+    {
+        if (Physics.Raycast(transform.position, transform.position - m_previousPos, out RaycastHit hit, hitDistance))
+        {
+            if (hit.collider.TryGetComponent(out IBallHitObjet obj))
+            {
+                obj.OnHit(m_rb, hit.normal, m_speed);
+            }
+            m_hitTime = Time.time;
+            onHit = true;
+        }
+
+        Debug.DrawLine(transform.position, transform.position + (transform.position - m_previousPos) * hitDistance, Color.red);
+        m_previousPos = transform.position;
     }
 
     /// <summary>
@@ -169,11 +213,7 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Catcher")
-        {
-            gameObject.SetActive(false);
-        }
-
+       
         if (other.gameObject.tag == "SpeedGun")
         {
             StopCoroutine(Timer());
@@ -190,10 +230,18 @@ public class Ball : MonoBehaviour
         {
             m_rb = GetComponent<Rigidbody>();
         }
-
+        transform.position = m_throwPos.transform.position;
         m_isCurve = false;
         StartCoroutine(BallMove());
         StartCoroutine(Timer());
+    }
+
+    private void OnDisable()
+    {
+        m_ballTrail.Clear();
+        
+        OnThrowAction?.Invoke();
+        onHit = false;
     }
 }
 

@@ -32,40 +32,36 @@ public class Pitcher : MonoBehaviour
             m_ballLimit = 9999;
             PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
         }
-        StartCoroutine(ThrowInterval());
         m_ball = m_ball.GetComponent<Ball>();
+        m_ball.OnThrowAction += () => ThrowBall();
+        ThrowBall();
     }
 
-    /// <summary>
-    /// 投球間隔をはかるコルーチン
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator ThrowInterval()
+    public void ThrowBall()
     {
-        while (true)
+        Debug.Log(m_ballLimit);
+        if (m_ballLimit == 0)
         {
-            if (m_ballLimit == 0)
-            {
-                StopCoroutine(ThrowInterval());
-                break;
-            }
-            yield return new WaitForSeconds(m_throwIntervalTime);
-            if (m_type == DevelopType.Debug)
-            {
-                m_ballType = 0;
-            }
-            else
-            {
-                m_ballType = Random.Range(0, 10);
-            }
-
-            // アニメーションのせいで位置がずれまくるので補正
-            transform.rotation = new Quaternion(0, 0, 0, 0);
-            transform.position = new Vector3(0, 0, 0);
-
-            m_ball.ChangeBallType(m_ballType);
-            m_anim.SetTrigger("Throw");
+            return;
         }
+
+        //StartCoroutine(ThrowInterval());
+        if (m_type == DevelopType.Debug)
+        {
+            m_ballType = 0;
+        }
+        else
+        {
+            m_ballType = Random.Range(0, 10);
+        }
+
+        // アニメーションのせいで位置がずれまくるので補正
+        transform.rotation = new Quaternion(0, 0, 0, 0);
+        transform.position = new Vector3(0, 0, 0);
+
+        m_ball.ChangeBallType(m_ballType);
+        m_anim.SetTrigger("Throw");
+
     }
 
     /// <summary>
@@ -73,13 +69,9 @@ public class Pitcher : MonoBehaviour
     /// </summary>
     public void Throw()
     {
-        if (m_ballLimit != 0)
-        {
-            m_ballLimit -= 1;
-            PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
-            m_ball.transform.position = m_throwPos.transform.position;
-            m_ball.gameObject.SetActive(true);
-        }
+        PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
+        m_ball.gameObject.SetActive(true);
+        m_ballLimit--;
     }
 }
 
