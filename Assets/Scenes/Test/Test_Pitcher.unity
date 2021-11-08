@@ -4316,7 +4316,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 17798631975852721, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
       propertyPath: m_throwIntervalTime
-      value: 7
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 825543491187163146, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
       propertyPath: m_RootOrder
