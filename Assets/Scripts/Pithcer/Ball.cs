@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 
 /// <summary>
@@ -15,12 +16,21 @@ public class Ball : MonoBehaviour
 
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
-    /// <summary>ボールのスピード</summary>
-    [SerializeField] float m_speed;
+    /// <summary>ボールに加える力</summary>
+    [SerializeField] float m_force = 1000;
     /// <summary>変化させるときの力</summary>
     [SerializeField] float m_changePower = 80;
     /// <summary>変化させるタイミング</summary>
     [SerializeField] float m_changeTime = 0.6f;
+
+    // ボールの速度
+    float m_speed;
+
+    [SerializeField] GameObject m_throwPos;
+    /// <summary>スピードの計測位置</summary>
+    [SerializeField] GameObject m_speedGun;
+    /// <summary>到達時間</summary>
+    float m_time;
 
     #region Ball Type Direction
     /// <summary>ストレートの力の方向</summary>
@@ -70,47 +80,47 @@ public class Ball : MonoBehaviour
     {
         m_rb.velocity = Vector3.zero;
         transform.rotation = new Quaternion(0, 0, 0, 0);
-        m_straightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.025f + 0.2f, 1.0f);
+        m_straightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.025f + 0.2f, m_straightDirection.z);
 
         switch (m_ballType)
         {
             case BallType.Straight:
                 m_ballTypeText.text = "ストレート";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 break;
             case BallType.Curve:
                 m_ballTypeText.text = "カーブ";
                 m_curveDirection = new Vector3(0.18f, PitcherUI.Instance.m_heightAdjust.value * 0.02f + 0.36f, 1.0f);
-                m_rb.AddForceAtPosition(m_curveDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_curveDirection * m_force, m_catcherPos.transform.position);
                 m_isCurve = true;
                 break;
             case BallType.Slider:
                 m_ballTypeText.text = "スライダー";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_sliderDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Shoot:
                 m_ballTypeText.text = "シュート";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_shootDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Fork:
                 m_ballTypeText.text = "フォーク";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_forkDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.Sinker:
                 m_ballTypeText.text = "シンカー";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_sinkerDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.ChangeUp:
                 m_ballTypeText.text = "チェンジアップ";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 m_changeTime = 0.2f;
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_changeUpDirection * m_changePower, m_catcherPos.transform.position);
@@ -119,22 +129,32 @@ public class Ball : MonoBehaviour
             case BallType.HighSpeedStraight:
                 m_ballTypeText.text = "速いストレート";
                 m_highSpeedStraightDirection = new Vector3(0, PitcherUI.Instance.m_heightAdjust.value * 0.03f + 0.12f, 1.5f);
-                m_rb.AddForceAtPosition(m_highSpeedStraightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_highSpeedStraightDirection * m_force, m_catcherPos.transform.position);
                 break;
             case BallType.RizeBall:
                 m_ballTypeText.text = "ライズボール";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_rizeBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             case BallType.CutBall:
                 m_ballTypeText.text = "カットボール";
-                m_rb.AddForceAtPosition(m_straightDirection * m_speed, m_catcherPos.transform.position);
+                m_rb.AddForceAtPosition(m_straightDirection * m_force, m_catcherPos.transform.position);
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_cutBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
             default:
                 break;
+        }
+    }
+
+    IEnumerator Timer()
+    {
+        m_time = 0f;
+        while (true)
+        {
+            m_time += Time.unscaledDeltaTime;
+            yield return null;
         }
     }
 
@@ -153,6 +173,15 @@ public class Ball : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+
+        if (other.gameObject.tag == "SpeedGun")
+        {
+            StopCoroutine(Timer());
+            m_speed = (m_speedGun.transform.position.z - m_throwPos.transform.position.z) / m_time;
+            m_speed *= 3.6f;
+
+            Debug.Log(Mathf.Floor(m_speed) + "km");
+        }
     }
 
     private void OnEnable()
@@ -164,6 +193,7 @@ public class Ball : MonoBehaviour
 
         m_isCurve = false;
         StartCoroutine(BallMove());
+        StartCoroutine(Timer());
     }
 }
 
