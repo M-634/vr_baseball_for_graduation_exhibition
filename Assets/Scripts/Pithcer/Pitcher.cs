@@ -33,8 +33,8 @@ public class Pitcher : MonoBehaviour
             PitcherUI.Instance.m_currentBallNum.text = "c‚è‚Ì‹…” : " + m_ballLimit.ToString();
         }
         m_ball = m_ball.GetComponent<Ball>();
-        m_ball.OnThrowAction += () => ThrowBall();
-        ThrowBall();
+        //m_ball.OnThrowAction += () => ThrowBall();
+        //ThrowBall();
     }
 
     public void ThrowBall()

@@ -20,7 +20,7 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
 
     public void OnHit(Rigidbody rb, Vector3 normal, float ballSpeed)
     {
-        BaseBallLogicEventManager.Instance.SendMessage(judgeType);
+        BaseBallLogic.Instance.UpdateJudgeType(judgeType);
     }
 }
 

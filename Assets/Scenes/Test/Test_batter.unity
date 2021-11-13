@@ -530,6 +530,7 @@ GameObject:
   - component: {fileID: 210739819}
   - component: {fileID: 210739818}
   - component: {fileID: 210739817}
+  - component: {fileID: 210739820}
   m_Layer: 0
   m_Name: Catcher
   m_TagString: Catcher
@@ -614,6 +615,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 210739815}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &210739820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210739815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  judgeType: 0
 --- !u!1 &213485554
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,7 +674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  judgeType: 0
+  judgeType: 3
 --- !u!65 &213485557
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1509,7 +1523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068ab044e01ba014fb4ef53f483c6098, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 0}
+  displayJudgeText: {fileID: 837437515}
 --- !u!1 &727058422
 GameObject:
   m_ObjectHideFlags: 0
@@ -3444,7 +3458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  judgeType: 0
+  judgeType: 3
 --- !u!65 &1574113303
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3914,6 +3928,17 @@ TrailRenderer:
   m_CorrespondingSourceObject: {fileID: 2024692008643975617, guid: 7f26eed3e54494a48a7b091798fbc0a3, type: 3}
   m_PrefabInstance: {fileID: 2024692009123552605}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1933807607 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 17798631975852721, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
+  m_PrefabInstance: {fileID: 936276014473554484}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a871bbcdee17fee4b9e086053aeb2eb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1934902070
 GameObject:
   m_ObjectHideFlags: 0
@@ -4039,7 +4064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  judgeType: 0
+  judgeType: 3
 --- !u!65 &1945736974
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4792,6 +4817,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 033b71b929c3d3247a5bbfcdc78fd8d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnThrowBall:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1933807607}
+        m_TargetAssemblyTypeName: Pitcher, Assembly-CSharp
+        m_MethodName: ThrowBall
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2136260279
 GameObject:
   m_ObjectHideFlags: 0

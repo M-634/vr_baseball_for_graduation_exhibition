@@ -8,19 +8,33 @@ using TMPro;
 /// </summary>
 public class UGUIControl : MonoBehaviour
 {
-
-    [SerializeField] TextMeshProUGUI text;
+    [SerializeField] TextMeshProUGUI displayJudgeText = default;
 
     // Start is called before the first frame update
     void Start()
     {
-        BaseBallLogicEventManager.Instance.OnReceiveMessage += (judgeType) =>
+        displayJudgeText.gameObject.SetActive(false);
+
+        BaseBallLogic.Instance.OnReceiveMessage += (judgeType) =>
         {
-            if (text)
+            if (judgeType == JudgeType.None) return;
+
+            if (displayJudgeText)
             {
-                text.gameObject.SetActive(true);
-                text.text = judgeType.ToString();
+                displayJudgeText.gameObject.SetActive(true);
+                displayJudgeText.text = judgeType.ToString();
+                StartCoroutine(DelayActive(displayJudgeText.gameObject, false, 2f));
             }  
         };
+    }
+
+    IEnumerator DelayActive(GameObject gameObject,bool value,float delayTime = 0f)
+    {
+        while (delayTime > 0f)
+        {
+            delayTime -= Time.deltaTime;
+            yield return null;
+        }
+        gameObject.SetActive(value);
     }
 }

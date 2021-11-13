@@ -74,7 +74,7 @@ public class Ball : MonoBehaviour
 
     float m_hitTime;
 
-    public event Action OnThrowAction = default;
+    //public event Action OnThrowAction = default;
 
     [SerializeField] TrailRenderer m_ballTrail;
 
@@ -239,8 +239,8 @@ public class Ball : MonoBehaviour
     private void OnDisable()
     {
         m_ballTrail.Clear();
-        
-        OnThrowAction?.Invoke();
+        //OnThrowAction?.Invoke();
+        BaseBallLogic.Instance.EndMoveBall();
         onHit = false;
     }
 }
