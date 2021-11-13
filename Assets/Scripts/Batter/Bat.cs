@@ -22,7 +22,7 @@ public class Bat : MonoBehaviour,IBallHitObjet
     public void OnHit(Rigidbody rb, Vector3 normal, float ballSpeed)
     {
         rb.velocity = DecideVelocity(normal) * BattingPower(ballSpeed);
-        Debug.Log("Hit!!");
+        //Debug.Log("Hit!!");
     }
 
 
