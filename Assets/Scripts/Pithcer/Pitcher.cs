@@ -11,7 +11,6 @@ public class Pitcher : MonoBehaviour
     /// <summary>ピッチャーのアニメーション</summary>
     [SerializeField] Animator m_anim;
 
-
     /// <summary>ボールのオブジェクト</summary>
     [SerializeField] Ball m_ball;
     /// <summary>ワンゲーム当たりの弾数制限</summary>
@@ -28,27 +27,41 @@ public class Pitcher : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(ThrowInterval());
+        if (m_type == DevelopType.Debug)
+        {
+            m_ballLimit = 9999;
+            PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
+        }
         m_ball = m_ball.GetComponent<Ball>();
+        m_ball.OnThrowAction += () => ThrowBall();
+        ThrowBall();
     }
 
-    IEnumerator ThrowInterval()
+    public void ThrowBall()
     {
-        while (true)
+        Debug.Log(m_ballLimit);
+        if (m_ballLimit == 0)
         {
-            yield return new WaitForSeconds(m_throwIntervalTime);
-            if (m_type == DevelopType.Debug)
-            {
-                m_ballType = 0;
-            }
-            else
-            {
-                m_ballType = Random.Range(0, 9);
-            }
-            
-            m_ball.ChangeBallType(m_ballType);
-            m_anim.SetTrigger("Throw");
+            return;
         }
+
+        //StartCoroutine(ThrowInterval());
+        if (m_type == DevelopType.Debug)
+        {
+            m_ballType = 0;
+        }
+        else
+        {
+            m_ballType = Random.Range(0, 10);
+        }
+
+        // アニメーションのせいで位置がずれまくるので補正
+        transform.rotation = new Quaternion(0, 0, 0, 0);
+        transform.position = new Vector3(0, 0, 0);
+
+        m_ball.ChangeBallType(m_ballType);
+        m_anim.SetTrigger("Throw");
+
     }
 
     /// <summary>
@@ -56,16 +69,15 @@ public class Pitcher : MonoBehaviour
     /// </summary>
     public void Throw()
     {
-        if (m_ballLimit != 0)
-        {
-            m_ballLimit -= 1;
-            PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
-            m_ball.transform.position = m_throwPos.transform.position;
-            m_ball.gameObject.SetActive(true);
-        }
+        PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
+        m_ball.gameObject.SetActive(true);
+        m_ballLimit--;
     }
 }
 
+/// <summary>
+/// 開発タイプ
+/// </summary>
 public enum DevelopType
 {
     Debug,
