@@ -14,19 +14,28 @@ public class StrikeZoneChecker : MonoBehaviour
     float m_eyeHeight;
 
     /// <summary>Playerの身長</summary>
-    float playerHeight;
+    private float playerHeight;
 
+    /// <summary>Playerの身長</summary>
     public float PlayerHeight
     {
         get { return playerHeight; }
         set { playerHeight = value; }
     }
 
-    /// HMDのカメラを基準におおよその身長を決める
-    /// 
+    private void Start()
+    {
+        HeightMeasurement();
+    }
 
+    /// <summary>
+    /// HMDのカメラを基準におおよその身長を決める関数
+    /// </summary>
     public void HeightMeasurement()
     {
-
+        m_eyeHeight = m_playerCamera.transform.position.y;
+        // 大体定規で図ったら目線の高さから8～8.5cmぐらいだった
+        playerHeight = m_eyeHeight + 0.085f;
+        Debug.Log(playerHeight);
     }
 }

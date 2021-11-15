@@ -8,9 +8,10 @@ using UnityEngine;
 /// </summary>
 public class Pitcher : MonoBehaviour
 {
+
     /// <summary>ピッチャーのアニメーション</summary>
     [SerializeField] Animator m_anim;
-
+ 
     /// <summary>ボールのオブジェクト</summary>
     [SerializeField] Ball m_ball;
     /// <summary>ワンゲーム当たりの弾数制限</summary>
