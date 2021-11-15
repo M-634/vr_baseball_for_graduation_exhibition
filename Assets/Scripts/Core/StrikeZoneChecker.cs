@@ -56,7 +56,7 @@ public class StrikeZoneChecker : MonoBehaviour
         // ãπÇÃÇ‹Ç≈ÇÃçÇÇ≥
         m_strikeZoneHeightMax = playerHeight - (oneHeadsHigh * 2f);
         // ïGâ∫Ç‹Ç≈ÇÃçÇÇ≥
-        m_strikeZoneHeightMin = playerHeight - (oneHeadsHigh * 5.5f);
+        m_strikeZoneHeightMin = playerHeight - (oneHeadsHigh * 6f);
 
         m_strikeZoneObj.SetActive(true);
 
