@@ -92,8 +92,8 @@ GameObject:
   - component: {fileID: 4063223116589258209}
   - component: {fileID: 1138474406301555268}
   - component: {fileID: 2893663061618110094}
-  - component: {fileID: 919132148827845519}
   - component: {fileID: 919132148827845518}
+  - component: {fileID: 7335428673210697889}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -166,19 +166,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &919132148827845519
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3686380227275329371}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.044644166, y: 0.06612549, z: 0.8478606}
-  m_Center: {x: 0, y: 0, z: 0.001145646}
 --- !u!114 &919132148827845518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,7 +179,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand: {fileID: 0}
-  angle: 0
+--- !u!64 &7335428673210697889
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3686380227275329371}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8670151273213183110, guid: 9946dd18c1534914f9bb525b21e7fb63, type: 3}
 --- !u!1 &4609870780611451854
 GameObject:
   m_ObjectHideFlags: 0

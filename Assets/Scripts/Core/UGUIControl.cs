@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Events;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// WorldSpace上のUI制御するクラス
@@ -15,26 +17,26 @@ public class UGUIControl : MonoBehaviour
     {
         displayJudgeText.gameObject.SetActive(false);
 
-        BaseBallLogic.Instance.OnReceiveMessage += (judgeType) =>
-        {
-            if (judgeType == JudgeType.None) return;
-
-            if (displayJudgeText)
-            {
-                displayJudgeText.gameObject.SetActive(true);
-                displayJudgeText.text = judgeType.ToString();
-                StartCoroutine(DelayActive(displayJudgeText.gameObject, false, 2f));
-            }  
-        };
+        BaseBallLogic.Instance.OnSendProcessMessage += DisplayMessage;
     }
 
-    IEnumerator DelayActive(GameObject gameObject,bool value,float delayTime = 0f)
+    private async UniTask DisplayMessage(JudgeType judgeType)
     {
-        while (delayTime > 0f)
+        if (judgeType == JudgeType.None)
         {
-            delayTime -= Time.deltaTime;
-            yield return null;
+            Debug.Log("何も表示しない");
+            return;
         }
-        gameObject.SetActive(value);
+
+        if (displayJudgeText)
+        {
+            displayJudgeText.gameObject.SetActive(true);
+            displayJudgeText.text = judgeType.ToString();
+        }
+
+        //判定処理を出すテキストの表示が終わったらタスク終了
+        await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
+        displayJudgeText.gameObject.SetActive(false);
+        Debug.Log("end UGUI task...");
     }
 }

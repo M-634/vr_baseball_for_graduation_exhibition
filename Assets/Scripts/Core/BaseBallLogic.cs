@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 野球のルールに従って,ゲームを進行を管理するクラス
@@ -13,7 +14,11 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     /// <summary>ピッチャーがボールを投げる時に発火される関数をインスペクター上で登録する変数</summary>
     [SerializeField] UnityEventWrapper OnThrowBall = default;
 
-    public event Action<JudgeType> OnReceiveMessage = default;
+
+    /// <summary>判定処理が終わった時に飛ばすイベント</summary>
+    public event Func<JudgeType, UniTask> OnSendProcessMessage = default;
+
+
     private JudgeType m_lastjudgeType;
 
     bool isFoul = false;//ファール判定が出たら更新しないためのフラグ
@@ -60,43 +65,78 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     /// </summary>
     public void EndMoveBall()
     {
-        OnReceiveMessage?.Invoke(m_lastjudgeType);
-        Process(m_lastjudgeType);
-        //次の球を投げるまでの待ち時間を実装すること
-        OnThrowBall?.Invoke();
+        if (m_lastjudgeType == JudgeType.None)
+        {
+            Debug.LogWarning("判定結果なし");
+            PlayBall();
+        }
+        else
+        {
+            Process();
+        }
     }
 
     /// <summary>
     ///　ピッチャーが投げた後の球の行方に応じて、処理するメンバー関数.
     /// </summary>
     /// <param name="judgeType"></param>
-    private void Process(JudgeType judgeType)
+    private async void Process()
     {
-        switch (judgeType)
+        UniTask processtask = default;
+        //塁を進む処理
+        if (m_lastjudgeType == JudgeType.Hit || m_lastjudgeType == JudgeType.TwoBase || m_lastjudgeType == JudgeType.ThreeBase)
         {
-            case JudgeType.None:
-                break;
-            case JudgeType.Strike:
-                break;
-            case JudgeType.Ball:
-                break;
-            case JudgeType.Hit:
-                break;
-            case JudgeType.TwoBase:
-                break;
-            case JudgeType.ThreeBase:
-                break;
-            case JudgeType.HomeRun:
-                break;
-            case JudgeType.Foul:
-                break;
-            case JudgeType.Out:
-                break;
-            default:
-                break;
+            processtask = HitBall();
         }
+        //ホームラン
+        else if (m_lastjudgeType == JudgeType.HomeRun)
+        {
+            processtask = HomeRun();
+        }
+        //ボールかストライクのカウントする
+        else if (m_lastjudgeType == JudgeType.Ball || m_lastjudgeType == JudgeType.Strike || m_lastjudgeType == JudgeType.Foul)
+        {
+            processtask = CountBallORStrike();
+        }
+        //アウト
+        else if (m_lastjudgeType == JudgeType.Out)
+        {
+            processtask = Out();
+        }
+
+        //uiに判定結果を表示する.
+        UniTask uguiTask = OnSendProcessMessage.Invoke(m_lastjudgeType);
+
+        await UniTask.WhenAll(processtask, uguiTask);
+        Debug.Log("end process..");
+
+        //次の球を投げる.
+        OnThrowBall?.Invoke();
+    }
+
+    public async UniTask HitBall()
+    {
+        await UniTask.WaitForEndOfFrame();
+    }
+
+    public async UniTask HomeRun()
+    {
+        await UniTask.WaitForEndOfFrame();
+    }
+
+    public async UniTask CountBallORStrike()
+    {
+        await UniTask.WaitForEndOfFrame();
+    }
+
+    public async UniTask Out()
+    {
+        await UniTask.WaitForEndOfFrame();
     }
 }
+
+
+
 
 
 /// <summary>
@@ -104,5 +144,5 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
 /// </summary>
 public enum JudgeType
 {
-    None,Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out
+    None, Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out
 }
