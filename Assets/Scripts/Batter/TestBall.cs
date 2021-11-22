@@ -21,7 +21,7 @@ namespace VR_BaseBall.Test
         {
             m_previousPos = transform.position;
             m_rb = GetComponent<Rigidbody>();
-            m_rb.velocity = Vector3.forward * m_speed;
+            //m_rb.velocity = Vector3.forward * m_speed;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace VR_BaseBall.Test
         /// </summary>
         private void FixedUpdate()
         {
-            if (onHit) return;
+            //if (onHit) return;
 
             HitCheck();
         }
