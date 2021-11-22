@@ -16,10 +16,7 @@ public interface IBallHitObjet
     /// <summary>
     /// ボールが当たった時の処理をする関数
     /// </summary>
-    /// <param name="rb">ボールオブジェクトのRigdBody</param>
-    /// <param name="normal">ヒットしたオブジェクトのMeshの法線ベクトル</param>
-    /// <param name="ballSpeed">当たる直前のボールスピード</param>
-    void OnHit(Rigidbody rb, Vector3 normal, float ballSpeed);
+    void OnHit(Rigidbody rb, RaycastHit hitObjectInfo, float ballSpeed);
 }
 
 /// <summary>

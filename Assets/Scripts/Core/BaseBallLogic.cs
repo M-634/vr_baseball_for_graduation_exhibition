@@ -107,6 +107,7 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         //uiに判定結果を表示する.
         UniTask uguiTask = OnSendProcessMessage.Invoke(m_lastjudgeType);
 
+        //全ての判定処理が終了するのを待つ.
         await UniTask.WhenAll(processtask, uguiTask);
         Debug.Log("end process..");
 

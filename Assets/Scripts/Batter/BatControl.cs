@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Bat : MonoBehaviour,IBallHitObjet
+/// <summary>
+/// バットが球を打ち返す時に発生する力学的な運動を制御するクラス.
+/// </summary>
+public class BatControl : MonoBehaviour,IBallHitObjet
 {
     [SerializeField] Transform hand;
    
@@ -19,11 +22,11 @@ public class Bat : MonoBehaviour,IBallHitObjet
 
     }
 
-    public void OnHit(Rigidbody rb, Vector3 normal, float ballSpeed)
+  
+    public void OnHit(Rigidbody rb, RaycastHit hitObjectInfo, float ballSpeed)
     {
-        rb.velocity = DecideVelocity(normal) * BattingPower(ballSpeed);
+        rb.velocity = DecideVelocity(hitObjectInfo.normal) * BattingPower(ballSpeed);
     }
-
 
     private Vector3 DecideVelocity(Vector3 normal)
     {
@@ -34,4 +37,5 @@ public class Bat : MonoBehaviour,IBallHitObjet
     {
         return ballSpeed;
     }
+
 }
