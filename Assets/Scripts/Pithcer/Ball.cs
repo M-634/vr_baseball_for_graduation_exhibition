@@ -107,7 +107,7 @@ public class Ball : MonoBehaviour
         {
             if (hit.collider.TryGetComponent(out IBallHitObjet obj))
             {
-                obj.OnHit(m_rb, hit.normal, m_speed);
+                obj.OnHit(m_rb, hit, m_speed);
             }
             m_hitTime = Time.time;
             onHit = true;

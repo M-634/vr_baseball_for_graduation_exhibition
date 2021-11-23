@@ -18,7 +18,7 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
         GetComponent<MeshRenderer>().enabled = false;
     }
 
-    public void OnHit(Rigidbody rb, Vector3 normal, float ballSpeed)
+    public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
     {
         BaseBallLogic.Instance.UpdateJudgeType(judgeType);
     }
