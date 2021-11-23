@@ -11,53 +11,53 @@ public class BatControl : MonoBehaviour, IBallHitObjet
 
     [Header("各Transfomをセットする")]
     /// <summary>バットの中心位置</summary>
-    [SerializeField] Transform barycenter;
+    [SerializeField] Transform m_barycenter;
     /// <summary>バットのグリップ位置</summary>
-    [SerializeField] Transform grip;
+    [SerializeField] Transform m_grip;
 
     [Header("ここより下の変数は、要調整が必要なもの")]
     /// <summary>バットの反発係数の最低値</summary>
-    [SerializeField, Range(0f, 0.5f)] float minValueOfRepulsionCoeffiecient;
+    [SerializeField, Range(0f, 0.5f)] float m_minValueOfRepulsionCoeffiecient;
     /// <summary>バットを振った時のイベントを飛ばす</summary>
     [SerializeField] UnityEventWrapperFloat OnSwingAction = default;
 
     [Header("デバック用")]
     /// <summary>デバック時のバットの回転速度</summary>
-    [SerializeField] float debugRotatePower = -10;
+    [SerializeField] float m_debugRotatePower = -10;
     /// <summary>ボールが当たった法線方向へそのままの速度で飛ばす</summary>
-    [SerializeField] bool isJustKeepHittingBallBack = false;
+    [SerializeField] bool m_isJustKeepHittingBallBack = false;
 
     /// <summary>バットに当たった瞬間にフラグを立てる</summary>
-    private bool onImpact = false;
+    private bool m_onImpact = false;
     /// <summary>1フレーム前の中心位置</summary>
-    private Vector3 lastBarycenterPos;
+    private Vector3 m_lastBarycenterPos;
     /// <summary>ヘッドスピード:バットの重心がグリッドを中心とする円運動から得られる速度(単位は km/h)</summary>
-    private float headSpeed;
+    private float m_headSpeed;
     /// <summary>インパクト時のバット中心のベクトルの向き</summary>
-    private Vector3 barycenterVectorOnImpact;
+    private Vector3 m_barycenterVectorOnImpact;
     /// <summary>グリップからバットの中心までの長さ（円運動における半径）</summary>
-    private float radius;
+    private float m_radius;
 
     // Start is called before the first frame update
     void Start()
     {
-        lastBarycenterPos = barycenter.position;
+        m_lastBarycenterPos = m_barycenter.position;
     }
 
 
     private void FixedUpdate()
     {
 
-        transform.RotateAround(grip.position, Vector3.up, debugRotatePower);
+        transform.RotateAround(m_grip.position, Vector3.up, m_debugRotatePower);
 
-        headSpeed = GetHeadSpeed(lastBarycenterPos, barycenter.position);
+        m_headSpeed = GetHeadSpeed(m_lastBarycenterPos, m_barycenter.position);
 
-        barycenterVectorOnImpact = (barycenter.position - lastBarycenterPos).normalized;
+        m_barycenterVectorOnImpact = (m_barycenter.position - m_lastBarycenterPos).normalized;
 
         //Debug.Log(barycenterVelocity * 1000);
         //Debug.DrawRay(barycenter.position, barycenterVectorOnImpact, Color.white);
 
-        lastBarycenterPos = barycenter.position;
+        m_lastBarycenterPos = m_barycenter.position;
     }
 
     /// <summary>
@@ -68,8 +68,8 @@ public class BatControl : MonoBehaviour, IBallHitObjet
     /// <returns></returns>
     private float GetHeadSpeed(Vector3 lastPos, Vector3 currentPos)
     {
-        var lhs = (lastPos - grip.position).normalized;
-        var rhs = (currentPos - grip.position).normalized;
+        var lhs = (lastPos - m_grip.position).normalized;
+        var rhs = (currentPos - m_grip.position).normalized;
 
         var dot = Vector3.Dot(lhs, rhs);
 
@@ -82,9 +82,9 @@ public class BatControl : MonoBehaviour, IBallHitObjet
         //角速度を求める
         float barycenterAngularVelocity = radian / Time.fixedDeltaTime; //ω = Δθ / Δt
         //グリップからバットの中心までの距離を測る
-        radius = (barycenter.position - grip.position).magnitude;
+        m_radius = (m_barycenter.position - m_grip.position).magnitude;
         //バット中心の速度を求める ; v = rω
-        var finalVelocity = radius * barycenterAngularVelocity;
+        var finalVelocity = m_radius * barycenterAngularVelocity;
         //m/s → km/hに変換
         finalVelocity = finalVelocity * 3.6f * 90f; // 1/90f → 1f
         //Debug用のUIにヘッドスピードを表示する.
@@ -94,32 +94,28 @@ public class BatControl : MonoBehaviour, IBallHitObjet
 
     public void OnHit(Rigidbody rb, RaycastHit hitObjectInfo, float ballSpeed)
     {
-        if (isJustKeepHittingBallBack)
+        if (m_isJustKeepHittingBallBack)
         {
             rb.velocity = hitObjectInfo.normal * ballSpeed;
             return;
         }
-        rb.velocity = hitObjectInfo.normal * BattingPower(hitObjectInfo, ballSpeed);
         Debug.Log("結果 :" + BattingPower(hitObjectInfo, ballSpeed));
+        rb.velocity = hitObjectInfo.normal * BattingPower(hitObjectInfo, ballSpeed);
     }
 
     private float BattingPower(RaycastHit hitObjectInfo, float ballSpeed)
     {
         //インパクトの瞬間のバットの向きとボールが当たった面の法線ベクトルの内積結果による補正値をかける.
-        float justMeetRatio = Vector3.Dot(barycenterVectorOnImpact, hitObjectInfo.normal);
-        justMeetRatio = Mathf.Clamp(justMeetRatio, minValueOfRepulsionCoeffiecient, 1f);
+        float justMeetRatio = Vector3.Dot(m_barycenterVectorOnImpact, hitObjectInfo.normal);
+        justMeetRatio = Mathf.Clamp(justMeetRatio, m_minValueOfRepulsionCoeffiecient, 1f);
 
         //ボールが当たった場所からバットの重心までの距離を求め,距離に応じてパワーに補正値をかける.
-        float hitCoreRatio = Vector3.Distance(hitObjectInfo.point, barycenter.position) * 100;
+        float hitCoreRatio = Vector3.Distance(hitObjectInfo.point, m_barycenter.position) * 100;
         //バットの芯に近い程1に近い値を返す、バットの芯からの距離が17cm超えると0を返す
         hitCoreRatio = Mathf.Clamp01(1 - hitCoreRatio / 17);
 
-        //Debug.Log("反発 :" + ballSpeed * e);
-        //Debug.Log("モーメント: " + barycenterVelocity * length);
-        // Debug.Log("合力 :" +  ballSpeed + headSpeed);
-        // Debug.Log("反発 :" + (e + length)/2);
         //最終的なボールに加える力を計算結果を返す（随時修正する)
-        return ballSpeed * ((justMeetRatio + hitCoreRatio) / 2) * BaseBallLogic.CoefficientOfRestitution + headSpeed;
+        return ballSpeed * ((justMeetRatio + hitCoreRatio) / 2) * BaseBallLogic.CoefficientOfRestitution + m_headSpeed;
     }
 
 }
