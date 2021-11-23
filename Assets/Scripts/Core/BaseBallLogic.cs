@@ -12,8 +12,10 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
 {
 
     /// <summary>ピッチャーがボールを投げる時に発火される関数をインスペクター上で登録する変数</summary>
-    [SerializeField] UnityEventWrapper OnThrowBall = default;
+    [SerializeField] UnityEventWrapperDefault OnThrowBall = default;
 
+    ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
+    public const float CoefficientOfRestitution = 0.4134f;
 
     /// <summary>判定処理が終わった時に飛ばすイベント</summary>
     public event Func<JudgeType, UniTask> OnSendProcessMessage = default;

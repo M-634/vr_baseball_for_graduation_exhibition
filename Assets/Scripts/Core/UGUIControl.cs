@@ -12,6 +12,9 @@ public class UGUIControl : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI displayJudgeText = default;
 
+    [Header("デバック用テキスト")]
+    [SerializeField] TextMeshProUGUI displayHeadSpeedOfBatText = default;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,5 +41,17 @@ public class UGUIControl : MonoBehaviour
         await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
         displayJudgeText.gameObject.SetActive(false);
         Debug.Log("end UGUI task...");
+    }
+
+
+    public void DisplayHeadSpeed(float velo)
+    {
+        if (velo < 70f) return;
+        velo = Mathf.Floor(velo);
+
+        if (displayHeadSpeedOfBatText)
+        {
+            displayHeadSpeedOfBatText.text = $"Head Speed\n{velo} km";
+        }
     }
 }
