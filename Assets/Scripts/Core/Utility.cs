@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
+#region Interfaces
 /// <summary>
 /// ボールに当たったら何かしらの処理を呼ぶゲームオブジェクトに継承するインターファイス
 /// ex; バット
@@ -16,19 +17,23 @@ public interface IBallHitObjet
     /// <summary>
     /// ボールが当たった時の処理をする関数
     /// </summary>
-    /// <param name="rb">ボールオブジェクトのRigdBody</param>
-    /// <param name="normal">ヒットしたオブジェクトのMeshの法線ベクトル</param>
-    /// <param name="ballSpeed">当たる直前のボールスピード</param>
-    void OnHit(Rigidbody rb, Vector3 normal, float ballSpeed);
+    void OnHit(Rigidbody rb, RaycastHit hitObjectInfo, float ballSpeed);
 }
+#endregion
 
+#region EventWrapperClasses
 /// <summary>
 /// UnityEventのラッパークラス.
 /// インスペクター上で関数を登録できる
 /// </summary>
 [Serializable]
-public class UnityEventWrapper : UnityEvent { }
+public class UnityEventWrapperDefault : UnityEvent { }
 
+[Serializable]
+public class UnityEventWrapperFloat: UnityEvent<float> { }
+#endregion
+
+#region siglton
 /// <summary>
 /// シングルトンパターンを使用するオブジェクに継承させる抽象クラス
 /// </summary>
@@ -64,4 +69,6 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
         }
     }
 }
+#endregion
+
 
