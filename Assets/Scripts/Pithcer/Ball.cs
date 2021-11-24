@@ -82,10 +82,15 @@ public class Ball : MonoBehaviour
     {
         if (!onHit) return;
 
-        if (Time.time - m_hitTime > 2f)
+        if (m_rb.velocity.magnitude <= 0.3f)
         {
             gameObject.SetActive(false);
         }
+
+        //if (Time.time - m_hitTime > 2f)
+        //{
+        //    gameObject.SetActive(false);
+        //}
     }
 
     private void FixedUpdate()
@@ -221,6 +226,14 @@ public class Ball : MonoBehaviour
             m_speed *= 3.6f;
 
             Debug.Log(Mathf.Floor(m_speed) + "km");
+        }
+
+        if (other.gameObject.TryGetComponent<HitCheck>(out var hitCheck))
+        {
+            if(hitCheck.judgeType == JudgeType.Catcher || hitCheck.judgeType == JudgeType.Pitcher)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 

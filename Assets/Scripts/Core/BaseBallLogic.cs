@@ -147,5 +147,5 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
 /// </summary>
 public enum JudgeType
 {
-    None, Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out
+    None, Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out, Catcher, Pitcher
 }

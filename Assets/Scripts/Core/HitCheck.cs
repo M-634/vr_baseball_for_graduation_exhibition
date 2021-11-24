@@ -10,7 +10,7 @@ using UnityEngine;
 public class HitCheck : MonoBehaviour,IBallHitObjet
 {
     /// <summary>何の判定を行うオブジェクトなのか予め決めておく</summary>
-    [SerializeField] JudgeType judgeType;
+    [SerializeField] public JudgeType judgeType;
 
     private void Start()
     {
