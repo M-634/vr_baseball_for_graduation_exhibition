@@ -37,7 +37,7 @@ public class Ball : MonoBehaviour
 
     Vector3 m_previousPos;
 
-    bool onHit;
+    bool onHitBat;
 
     #region Ball Type Direction
     /// <summary>ストレートの力の方向</summary>
@@ -72,7 +72,7 @@ public class Ball : MonoBehaviour
 
     Rigidbody m_rb;
 
-    float m_hitTime;
+    //float m_hitTime;
 
     //public event Action OnThrowAction = default;
 
@@ -80,17 +80,12 @@ public class Ball : MonoBehaviour
 
     private void Update()
     {
-        if (!onHit) return;
+        if (!onHitBat) return;
 
         if (m_rb.velocity.magnitude <= 0.3f)
         {
             gameObject.SetActive(false);
         }
-
-        //if (Time.time - m_hitTime > 2f)
-        //{
-        //    gameObject.SetActive(false);
-        //}
     }
 
     private void FixedUpdate()
@@ -114,8 +109,13 @@ public class Ball : MonoBehaviour
             {
                 obj.OnHit(m_rb, hit, m_speed);
             }
-            m_hitTime = Time.time;
-            onHit = true;
+
+            if (hit.collider.gameObject.CompareTag("BatMesh"))
+            {
+                onHitBat = true;
+                Debug.Log("Hit bat");
+            }
+            //m_hitTime = Time.time;
         }
 
         Debug.DrawLine(transform.position, transform.position + (transform.position - m_previousPos) * hitDistance, Color.red);
@@ -227,14 +227,6 @@ public class Ball : MonoBehaviour
 
             Debug.Log(Mathf.Floor(m_speed) + "km");
         }
-
-        if (other.gameObject.TryGetComponent<HitCheck>(out var hitCheck))
-        {
-            if(hitCheck.judgeType == JudgeType.Catcher || hitCheck.judgeType == JudgeType.Pitcher)
-            {
-                gameObject.SetActive(false);
-            }
-        }
     }
 
     private void OnEnable()
@@ -252,9 +244,8 @@ public class Ball : MonoBehaviour
     private void OnDisable()
     {
         m_ballTrail.Clear();
-        //OnThrowAction?.Invoke();
         BaseBallLogic.Instance.EndMoveBall();
-        onHit = false;
+        onHitBat = false;
     }
 }
 

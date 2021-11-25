@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Catcher
   - SpeedGun
+  - BatMesh
   layers:
   - Default
   - TransparentFX
