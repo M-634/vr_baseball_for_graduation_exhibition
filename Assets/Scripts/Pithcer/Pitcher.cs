@@ -8,9 +8,10 @@ using UnityEngine;
 /// </summary>
 public class Pitcher : MonoBehaviour
 {
+
     /// <summary>ピッチャーのアニメーション</summary>
     [SerializeField] Animator m_anim;
-
+ 
     /// <summary>ボールのオブジェクト</summary>
     [SerializeField] Ball m_ball;
     /// <summary>ワンゲーム当たりの弾数制限</summary>
@@ -37,15 +38,16 @@ public class Pitcher : MonoBehaviour
         //ThrowBall();
     }
 
+    /// <summary>
+    /// コールバックで呼ばれる関数
+    /// </summary>
     public void ThrowBall()
     {
-        Debug.Log(m_ballLimit);
         if (m_ballLimit == 0)
         {
             return;
         }
 
-        //StartCoroutine(ThrowInterval());
         if (m_type == DevelopType.Debug)
         {
             m_ballType = 0;
@@ -61,7 +63,6 @@ public class Pitcher : MonoBehaviour
 
         m_ball.ChangeBallType(m_ballType);
         m_anim.SetTrigger("Throw");
-
     }
 
     /// <summary>
@@ -69,9 +70,9 @@ public class Pitcher : MonoBehaviour
     /// </summary>
     public void Throw()
     {
+        m_ballLimit--;
         PitcherUI.Instance.m_currentBallNum.text = "残りの球数 : " + m_ballLimit.ToString();
         m_ball.gameObject.SetActive(true);
-        m_ballLimit--;
     }
 }
 

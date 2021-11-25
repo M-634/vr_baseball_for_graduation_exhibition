@@ -60,13 +60,16 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         {
             m_lastjudgeType = judgeType;
         }
+        Debug.Log(m_lastjudgeType.ToString());
     }
 
     /// <summary>
     /// 球が動かなくなったら呼ばれるメンバー関数.
     /// </summary>
-    public void EndMoveBall()
+    public async void EndMoveBall()
     {
+        await UniTask.Delay(TimeSpan.FromSeconds(1f), ignoreTimeScale: false); 
+        Debug.Log("end ball :" + m_lastjudgeType.ToString());
         if (m_lastjudgeType == JudgeType.None)
         {
             Debug.LogWarning("判定結果なし");
@@ -114,7 +117,7 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         Debug.Log("end process..");
 
         //次の球を投げる.
-        OnThrowBall?.Invoke();
+        PlayBall();
     }
 
     public async UniTask HitBall()
@@ -147,5 +150,5 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
 /// </summary>
 public enum JudgeType
 {
-    None, Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out
+    None, Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out, Catcher, Pitcher,OffThePremises
 }
