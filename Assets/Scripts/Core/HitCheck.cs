@@ -10,7 +10,7 @@ using UnityEngine;
 public class HitCheck : MonoBehaviour,IBallHitObjet
 {
     /// <summary>何の判定を行うオブジェクトなのか予め決めておく</summary>
-    [SerializeField] public JudgeType judgeType;
+    [SerializeField] JudgeType judgeType;
 
     private void Start()
     {
@@ -20,6 +20,12 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
 
     public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
     {
+        //ホームランか、場外（ファール判定）
+       if(judgeType == JudgeType.HomeRun || judgeType == JudgeType.OffThePremises 
+            || judgeType == JudgeType.Catcher || judgeType == JudgeType.Pitcher)
+        {
+            rb.gameObject.SetActive(false);
+        }
         BaseBallLogic.Instance.UpdateJudgeType(judgeType);
     }
 }
