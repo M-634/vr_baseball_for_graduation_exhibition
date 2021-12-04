@@ -23,9 +23,10 @@ public class Ball : MonoBehaviour
     /// <summary>変化させるタイミング</summary>
     [SerializeField] float m_changeTime = 0.6f;
 
-    // ボールの速度
+    /// <summary>ボールをスピード</summary>
     float m_speed;
 
+    /// <summary>ボールを投げる位置</summary>
     [SerializeField] GameObject m_throwPos;
     /// <summary>スピードの計測位置</summary>
     [SerializeField] GameObject m_speedGun;
@@ -37,6 +38,7 @@ public class Ball : MonoBehaviour
 
     Vector3 m_previousPos;
 
+    /// <summary>バットに当たったかどうか</summary>
     bool onHitBat;
 
     #region Ball Type Direction
@@ -67,6 +69,15 @@ public class Ball : MonoBehaviour
 
     #endregion
 
+    #region Magic Ball
+    /// <summary>魔球かどうか</summary>
+    bool m_isMagicBall = false;
+
+    /// <summary>魔球のスピード</summary>
+    [SerializeField] float m_mBSpeed;
+
+    #endregion
+
     /// <summary>投げている球種を表示するテキスト</summary>
     [SerializeField] Text m_ballTypeText;
 
@@ -76,6 +87,7 @@ public class Ball : MonoBehaviour
 
     //public event Action OnThrowAction = default;
 
+    /// <summary>ボールの軌跡</summary>
     [SerializeField] TrailRenderer m_ballTrail;
 
     private void Update()
@@ -192,6 +204,14 @@ public class Ball : MonoBehaviour
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_cutBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
+            case BallType.DragonflyBall:
+                m_ballTypeText.text = "トンボボール";
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.velocity = Vector3.zero;
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+                break;
             default:
                 break;
         }
@@ -214,6 +234,12 @@ public class Ball : MonoBehaviour
     public void ChangeBallType(int ballType)
     {
         m_ballType = (BallType)ballType;
+        if ((int)m_ballType >= 10)
+        {
+            m_isMagicBall = true;
+           
+            m_rb.isKinematic = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -246,6 +272,7 @@ public class Ball : MonoBehaviour
         m_ballTrail.Clear();
         BaseBallLogic.Instance.EndMoveBall();
         onHitBat = false;
+        m_rb.isKinematic = false;
     }
 }
 
@@ -260,5 +287,6 @@ public enum BallType
     ChangeUp = 6,
     HighSpeedStraight = 7,
     RizeBall = 8,
-    CutBall = 9
+    CutBall = 9,
+    DragonflyBall = 10
 }
