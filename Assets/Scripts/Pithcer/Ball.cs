@@ -81,7 +81,7 @@ public class Ball : MonoBehaviour
     /// <summary>投げている球種を表示するテキスト</summary>
     [SerializeField] Text m_ballTypeText;
 
-    Rigidbody m_rb;
+    [SerializeField] Rigidbody m_rb;
 
     //float m_hitTime;
 
@@ -105,6 +105,12 @@ public class Ball : MonoBehaviour
         if (m_isCurve)
         {
             m_rb.AddForceAtPosition(m_changeCurveDirection * 1, m_catcherPos.transform.position);
+        }
+
+        if (m_ballType == BallType.WhiteBall)
+        {
+            transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 30f), transform.position.z);
+            m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
         }
 
         HitCheck();
@@ -204,13 +210,9 @@ public class Ball : MonoBehaviour
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_cutBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
-            case BallType.DragonflyBall:
-                m_ballTypeText.text = "トンボボール";
-                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
-                yield return new WaitForSeconds(m_changeTime);
-                m_rb.velocity = Vector3.zero;
-                yield return new WaitForSeconds(m_changeTime);
-                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+            case BallType.WhiteBall:
+                m_ballTypeText.text = "ホワイトボール";
+                
                 break;
             default:
                 break;
@@ -233,13 +235,13 @@ public class Ball : MonoBehaviour
     /// <param name="ballType"></param>
     public void ChangeBallType(int ballType)
     {
-        m_ballType = (BallType)ballType;
-        if ((int)m_ballType >= 10)
+        if (ballType >= 10)
         {
             m_isMagicBall = true;
-           
-            m_rb.isKinematic = true;
+
+            m_rb.useGravity = false;
         }
+        m_ballType = (BallType)ballType;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -257,10 +259,6 @@ public class Ball : MonoBehaviour
 
     private void OnEnable()
     {
-        if (m_rb == null)
-        {
-            m_rb = GetComponent<Rigidbody>();
-        }
         transform.position = m_throwPos.transform.position;
         m_isCurve = false;
         StartCoroutine(BallMove());
@@ -272,7 +270,7 @@ public class Ball : MonoBehaviour
         m_ballTrail.Clear();
         BaseBallLogic.Instance.EndMoveBall();
         onHitBat = false;
-        m_rb.isKinematic = false;
+        m_rb.useGravity = true;
     }
 }
 
@@ -288,5 +286,5 @@ public enum BallType
     HighSpeedStraight = 7,
     RizeBall = 8,
     CutBall = 9,
-    DragonflyBall = 10
+    WhiteBall = 10
 }
