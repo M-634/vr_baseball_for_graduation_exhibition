@@ -640,7 +640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  judgeType: 0
+  judgeType: 9
 --- !u!1 &213485554
 GameObject:
   m_ObjectHideFlags: 0
@@ -5108,7 +5108,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 17798631975852721, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
       propertyPath: m_debugBallType
-      value: 1
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 17798631975852721, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
       propertyPath: m_throwIntervalTime
@@ -5229,7 +5229,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2024692008643975627, guid: 7f26eed3e54494a48a7b091798fbc0a3, type: 3}
       propertyPath: m_mBSpeed
-      value: 60
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2024692008643975627, guid: 7f26eed3e54494a48a7b091798fbc0a3, type: 3}
       propertyPath: m_speedGun
