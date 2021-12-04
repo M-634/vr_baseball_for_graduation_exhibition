@@ -112,7 +112,7 @@ public class Ball : MonoBehaviour
             transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 30f), transform.position.z);
             m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
         }
-        else if (m_ballType == BallType.WideWhiteBall)
+        else if (m_ballType == BallType.WanderWhiteBall)
         {
             transform.position = new Vector3(Mathf.Sin(Time.time * 30f), transform.position.y, transform.position.z);
             m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
@@ -219,8 +219,8 @@ public class Ball : MonoBehaviour
                 m_ballTypeText.text = "ホワイトボール";
                 
                 break;
-            case BallType.WideWhiteBall:
-                m_ballTypeText.text = "ワイドホワイトボール";
+            case BallType.WanderWhiteBall:
+                m_ballTypeText.text = "ワンダーホワイトボール";
 
                 break;
             default:
@@ -296,5 +296,5 @@ public enum BallType
     RizeBall = 8,
     CutBall = 9,
     WhiteBall = 10,
-    WideWhiteBall = 11
+    WanderWhiteBall = 11
 }
