@@ -13,6 +13,8 @@ public class Ball : MonoBehaviour
 {
     /// <summary>ボールを投げ込む位置</summary>
     [SerializeField] GameObject m_catcherPos;
+    /// <summary>キャッチャーの初期化処理</summary>
+    Vector3 m_initCatcherPos;
 
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
@@ -90,6 +92,11 @@ public class Ball : MonoBehaviour
     /// <summary>ボールの軌跡</summary>
     [SerializeField] TrailRenderer m_ballTrail;
 
+    private void Start()
+    {
+        m_initCatcherPos = new Vector3(0, 0, 21.5f);
+    }
+
     private void Update()
     {
         if (!onHitBat) return;
@@ -109,7 +116,8 @@ public class Ball : MonoBehaviour
 
         if (m_ballType == BallType.WhiteBall)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 30f), transform.position.z);
+            transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 100f) * 0.5f, transform.position.z);
+          
             m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
         }
         else if (m_ballType == BallType.WanderWhiteBall)
@@ -272,10 +280,15 @@ public class Ball : MonoBehaviour
         m_isCurve = false;
         StartCoroutine(BallMove());
         StartCoroutine(Timer());
+        if (m_ballType == BallType.WhiteBall)
+        {
+            m_catcherPos.transform.position = new Vector3(m_catcherPos.transform.position.x, m_catcherPos.transform.position.y + 100, m_catcherPos.transform.position.z);
+        }
     }
 
     private void OnDisable()
     {
+        m_catcherPos.transform.position = m_initCatcherPos;
         m_ballTrail.Clear();
         BaseBallLogic.Instance.EndMoveBall();
         onHitBat = false;
