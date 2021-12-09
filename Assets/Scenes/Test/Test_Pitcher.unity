@@ -2289,7 +2289,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 819866260975635871, guid: 1fd3f7aaa95c9f74fa0f5becbbbac79f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.18
+      value: 1.45
       objectReference: {fileID: 0}
     - target: {fileID: 819866260975635871, guid: 1fd3f7aaa95c9f74fa0f5becbbbac79f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2297,7 +2297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 819866260975635871, guid: 1fd3f7aaa95c9f74fa0f5becbbbac79f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 19.399961
+      value: 18.92
       objectReference: {fileID: 0}
     - target: {fileID: 819866260975635871, guid: 1fd3f7aaa95c9f74fa0f5becbbbac79f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2341,7 +2341,7 @@ PrefabInstance:
       objectReference: {fileID: 354260505}
     - target: {fileID: 819866261479334400, guid: 1fd3f7aaa95c9f74fa0f5becbbbac79f, type: 3}
       propertyPath: m_debugRotatePower
-      value: -3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 819866261479334427, guid: 1fd3f7aaa95c9f74fa0f5becbbbac79f, type: 3}
       propertyPath: m_TagString
@@ -5117,7 +5117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 17798631975852721, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
       propertyPath: m_debugBallType
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 17798631975852721, guid: a493f643bd85bab4499c0402ffd6d142, type: 3}
       propertyPath: m_throwIntervalTime
