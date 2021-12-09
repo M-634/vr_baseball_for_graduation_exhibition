@@ -101,9 +101,12 @@ public class Ball : MonoBehaviour
     {
         if (!onHitBat) return;
 
-        if (m_rb.velocity.magnitude <= 0.3f)
+        if (onHitBat)
         {
-            gameObject.SetActive(false);
+            if (m_rb.velocity.magnitude <= 0.3f)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 
@@ -117,7 +120,7 @@ public class Ball : MonoBehaviour
         if (m_ballType == BallType.WhiteBall)
         {
             transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 100f) * 0.5f, transform.position.z);
-          
+
             m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
         }
         else if (m_ballType == BallType.WanderWhiteBall)
@@ -225,11 +228,20 @@ public class Ball : MonoBehaviour
                 break;
             case BallType.WhiteBall:
                 m_ballTypeText.text = "ホワイトボール";
-                
+
                 break;
             case BallType.WanderWhiteBall:
                 m_ballTypeText.text = "ワンダーホワイトボール";
 
+                break;
+
+            case BallType.DragonflyBall:
+                m_ballTypeText.text = "トンボール";
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.velocity = Vector3.zero;
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
                 break;
             default:
                 break;
@@ -263,7 +275,7 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-       
+
         if (other.gameObject.tag == "SpeedGun")
         {
             StopCoroutine(Timer());
@@ -309,5 +321,6 @@ public enum BallType
     RizeBall = 8,
     CutBall = 9,
     WhiteBall = 10,
-    WanderWhiteBall = 11
+    WanderWhiteBall = 11,
+    DragonflyBall = 12
 }
