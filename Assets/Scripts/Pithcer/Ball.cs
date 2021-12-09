@@ -103,6 +103,7 @@ public class Ball : MonoBehaviour
 
         if (onHitBat)
         {
+            m_rb.useGravity = true;
             if (m_rb.velocity.magnitude <= 0.3f)
             {
                 gameObject.SetActive(false);
@@ -147,6 +148,7 @@ public class Ball : MonoBehaviour
             if (hit.collider.gameObject.CompareTag("BatMesh"))
             {
                 onHitBat = true;
+               
                 Debug.Log("Hit bat");
             }
             //m_hitTime = Time.time;
