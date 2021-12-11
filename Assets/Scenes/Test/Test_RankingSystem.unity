@@ -3689,6 +3689,7 @@ GameObject:
   - component: {fileID: 2092929757}
   - component: {fileID: 2092929756}
   - component: {fileID: 2092929755}
+  - component: {fileID: 2092929760}
   m_Layer: 5
   m_Name: RankingBoard
   m_TagString: Untagged
@@ -3754,7 +3755,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &2092929758
 Canvas:
   m_ObjectHideFlags: 0
@@ -3797,3 +3798,31 @@ RectTransform:
   m_AnchoredPosition: {x: -2.0574756, y: -0.46707278}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2092929760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092929754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4adf9b36fa99797479b281d078510fda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_playerRecordTexts:
+  - m_posText: {fileID: 1743437240}
+    m_scoreText: {fileID: 2047131563}
+    m_nameText: {fileID: 1447046850}
+  - m_posText: {fileID: 1759472611}
+    m_scoreText: {fileID: 526399920}
+    m_nameText: {fileID: 943894301}
+  - m_posText: {fileID: 137944958}
+    m_scoreText: {fileID: 1428923865}
+    m_nameText: {fileID: 1480014327}
+  - m_posText: {fileID: 623945165}
+    m_scoreText: {fileID: 2001271030}
+    m_nameText: {fileID: 1075208815}
+  - m_posText: {fileID: 55526687}
+    m_scoreText: {fileID: 685325588}
+    m_nameText: {fileID: 784779795}
