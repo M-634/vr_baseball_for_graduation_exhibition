@@ -15,6 +15,8 @@ public class Ball : MonoBehaviour
     [SerializeField] GameObject m_catcherPos;
     /// <summary>キャッチャーの初期化処理</summary>
     Vector3 m_initCatcherPos;
+    /// <summary>ボールが消える瞬間に出るエフェクト</summary>
+    [SerializeField] GameObject m_arrivalPoint;
 
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
@@ -106,6 +108,8 @@ public class Ball : MonoBehaviour
             m_rb.useGravity = true;
             if (m_rb.velocity.magnitude <= 0.3f)
             {
+                m_arrivalPoint.transform.position = transform.position;
+                m_arrivalPoint.SetActive(true);
                 gameObject.SetActive(false);
             }
         }
