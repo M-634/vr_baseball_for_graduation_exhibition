@@ -245,13 +245,6 @@ public class Ball : MonoBehaviour
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
                 break;
-
-            case BallType.QBall:
-                m_ballTypeText.text = "クイーンボール";
-                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
-                yield return new WaitForSeconds(m_changeTime);
-                transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 30f), transform.position.z);
-                break;
             default:
                 break;
         }
@@ -331,6 +324,5 @@ public enum BallType
     CutBall = 9,
     WhiteBall = 10,
     WanderWhiteBall = 11,
-    DragonflyBall = 12,
-    QBall = 13
+    DragonflyBall = 12
 }
