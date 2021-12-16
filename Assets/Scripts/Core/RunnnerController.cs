@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace Katsumata
 {
     public class RunnnerController : MonoBehaviour
     {
+        ScoreManager m_scoreManager = new ScoreManager();
+
         //先に出ていた人から消えていく（ホームベースに戻る）のでキューで処理する
         List<Runner> m_runners = new List<Runner>();
         [SerializeField] GameObject m_runnerObj;
@@ -17,11 +20,12 @@ namespace Katsumata
         [SerializeField] GameObject m_base3;
         Dictionary<BaseName, Vector3> m_basePositions = new Dictionary<BaseName, Vector3>();
         [SerializeField] float m_moveSpeed = 1.0f;
-
+        bool m_isRunning = false;
 
         // Start is called before the first frame update
         void Start()
         {
+            m_scoreManager = GetComponent<ScoreManager>();
             RunnersInit();
         }
 
@@ -32,19 +36,23 @@ namespace Katsumata
 
             if (Input.GetKeyDown(KeyCode.Z))
             {
-                TestHit(1);
+                //TestHit(1);
+                Hit(1);
             }
             else if (Input.GetKeyDown(KeyCode.X))
             {
-                TestHit(2);
+                //TestHit(2);
+                Hit(2);
             }
             else if (Input.GetKeyDown(KeyCode.C))
             {
-                TestHit(3);
+                //TestHit(3);
+                Hit(3);
             }
             else if (Input.GetKeyDown(KeyCode.V))
             {
-                TestHit(4);
+                //TestHit(4);
+                Hit(4);
             }
 #endif
 
@@ -62,7 +70,7 @@ namespace Katsumata
             m_basePositions.Add(BaseName.Third, m_base3.transform.position);//3塁の座標
         }
 
-        void RunnerMove(int hitNum)
+        async UniTask RunnerMove(int hitNum)
         {
             //ランナーインスタンスを追加する
             m_runners.Add(new Runner(BaseName.Home, Instantiate(m_runnerObj)));
@@ -76,7 +84,8 @@ namespace Katsumata
                     {
                         m_runners[i].GetOnBase();//ホームに進む
                         m_runners[i].RegisterRelayPoint(m_basePositions[BaseName.Home]);
-                        StartCoroutine(RunningAnim(m_runners[i], BaseName.Home, m_moveSpeed));
+                        //StartCoroutine(RunningAnim(m_runners[i], BaseName.Home, m_moveSpeed));
+                        RunningAnimTask(m_runners[i], BaseName.Home, m_moveSpeed);
                         m_runners.RemoveAt(i);
                         i--;
                         break;
@@ -85,11 +94,11 @@ namespace Katsumata
                     {
                         nowBase++;
                         m_runners[i].GetOnBase();//次の塁に進む
-                        //StartCoroutine(RunningAnim(m_runners[i], nowBase, moveSpeed));
                         m_runners[i].RegisterRelayPoint(m_basePositions[nowBase]);
                         if (j == hitNum - 1)
                         {
-                            StartCoroutine(RunningAnim(m_runners[i], nowBase, m_moveSpeed));
+                            //StartCoroutine(RunningAnim(m_runners[i], nowBase, m_moveSpeed));
+                            RunningAnimTask(m_runners[i], nowBase, m_moveSpeed);
                         }
                     }
                 }
@@ -103,14 +112,25 @@ namespace Katsumata
         /// <param name="advanceBases">進塁する数。</param>
         void TestHit(int advanceBases)
         {
-            RunnerMove(advanceBases);
-            Debug.Log("ランナーの数は : " + m_runners.Count);
+            if (!m_isRunning)
+            {
+                RunnerMove(advanceBases);
+                Debug.Log("ランナーの数は : " + m_runners.Count);
+            }
+        }
+
+        async UniTask Hit(int advanceBases)
+        {
+            await RunnerMove(advanceBases);
+            Debug.Log("Unitask完了! ランナーの数は : " + m_runners.Count);
+            
         }
 
         IEnumerator RunningAnim(Runner runner, BaseName nextBase, float speed)
         {
+            m_isRunning = true;
             var tmp = 0.0f;
-            var finishPosi = Vector3.zero;
+            Vector3 finishPosi;
             var nowPosi = runner.GetRunnerObj.transform.position;
             var relayPositions = runner.GetRelayPoints;
             for (int i = 0; i < relayPositions.Count; i++)
@@ -126,15 +146,47 @@ namespace Katsumata
                 nowPosi = runner.GetRunnerObj.transform.position;
                 tmp = 0.0f;
             }
-            
-            runner.GetRunnerObj.transform.position = finishPosi;
+
             runner.DeleteAllRelayPoint();
 
             if (nextBase == BaseName.Home)
             {
                 Destroy(runner.GetRunnerObj);
             }
+            m_isRunning = false;
             yield break;
+        }
+
+        async UniTask RunningAnimTask(Runner runner, BaseName nextBase, float speed, CancellationToken cancellation_token = default)
+        {
+            var tmp = 0.0f;
+            Vector3 finishPosi;
+            var nowPosi = runner.GetRunnerObj.transform.position;
+            var relayPositions = runner.GetRelayPoints;
+            for (int i = 0; i < relayPositions.Count; i++)
+            {
+                finishPosi = relayPositions[i];
+                while (tmp <= 1.0f)
+                {
+                    runner.GetRunnerObj.transform.position = Vector3.Lerp(nowPosi, finishPosi, tmp);
+                    tmp += speed * Time.deltaTime;
+                    await UniTask.Yield(PlayerLoopTiming.Update, cancellation_token);
+                }
+                nowPosi = runner.GetRunnerObj.transform.position;
+                tmp = 0.0f;
+            }
+
+            runner.DeleteAllRelayPoint();
+
+            if (nextBase == BaseName.Home)
+            {
+                m_scoreManager.AddScore();
+                Debug.Log("得点は : " + m_scoreManager.GetScore + "点");
+                Debug.Log("年収は : " + m_scoreManager.GetIncome + "円！");
+
+                Destroy(runner.GetRunnerObj);
+            }
+            return;
         }
 
     }
