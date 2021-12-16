@@ -15,8 +15,10 @@ namespace Katsumata
         [SerializeField] GameObject m_base1;
         [SerializeField] GameObject m_base2;
         [SerializeField] GameObject m_base3;
-        Dictionary<BaseName, Vector3> basePositions = new Dictionary<BaseName, Vector3>();
-        [SerializeField] float moveSpeed = 1.0f;
+        Dictionary<BaseName, Vector3> m_basePositions = new Dictionary<BaseName, Vector3>();
+        [SerializeField] float m_moveSpeed = 1.0f;
+
+
         // Start is called before the first frame update
         void Start()
         {
@@ -54,61 +56,79 @@ namespace Katsumata
         private void RunnersInit()
         {
             //走塁先の座標を登録する
-            basePositions.Add(BaseName.Home, m_homeBase.transform.position);//ホームの座標
-            basePositions.Add(BaseName.First, m_base1.transform.position);//1塁の座標
-            basePositions.Add(BaseName.Second, m_base2.transform.position);//2塁の座標
-            basePositions.Add(BaseName.Third, m_base3.transform.position);//3塁の座標
+            m_basePositions.Add(BaseName.Home, m_homeBase.transform.position);//ホームの座標
+            m_basePositions.Add(BaseName.First, m_base1.transform.position);//1塁の座標
+            m_basePositions.Add(BaseName.Second, m_base2.transform.position);//2塁の座標
+            m_basePositions.Add(BaseName.Third, m_base3.transform.position);//3塁の座標
         }
 
         void RunnerMove(int hitNum)
         {
-            //キューの末尾にランナーインスタンスを追加する
+            //ランナーインスタンスを追加する
             m_runners.Add(new Runner(BaseName.Home, Instantiate(m_runnerObj)));
-            for (int i = 0; i < hitNum; i++)
+            //すべてのランナーを走らせる
+            for (int i = 0; i < m_runners.Count; i++)
             {
-                //すべてのランナーを走らせる
-                for (int j = 0; j < m_runners.Count; j++)
+                for (int j = 0; j < hitNum; j++)
                 {
-                    var nowBase = m_runners[j].GetBasePosi;
+                    var nowBase = m_runners[i].GetBasePosi;
                     if (nowBase == BaseName.Third)
                     {
-                        m_runners[j].RunningBase(basePositions[BaseName.Home]);//ホームに進む
-                        StartCoroutine(RunningAnim(m_runners[j], BaseName.Home, moveSpeed));
-
-                        m_runners.RemoveAt(j);
-                        j--;
+                        m_runners[i].GetOnBase();//ホームに進む
+                        m_runners[i].RegisterRelayPoint(m_basePositions[BaseName.Home]);
+                        StartCoroutine(RunningAnim(m_runners[i], BaseName.Home, m_moveSpeed));
+                        m_runners.RemoveAt(i);
+                        i--;
+                        break;
                     }
                     else
                     {
-                        StartCoroutine(RunningAnim(m_runners[j], ++nowBase, moveSpeed));
-                        //m_runners[j].RunningBase(basePositions[++nowBase]);//次の塁に進む
+                        nowBase++;
+                        m_runners[i].GetOnBase();//次の塁に進む
+                        //StartCoroutine(RunningAnim(m_runners[i], nowBase, moveSpeed));
+                        m_runners[i].RegisterRelayPoint(m_basePositions[nowBase]);
+                        if (j == hitNum - 1)
+                        {
+                            StartCoroutine(RunningAnim(m_runners[i], nowBase, m_moveSpeed));
+                        }
                     }
                 }
             }
+
         }
 
         /// <summary>
         /// 仮のヒット関数
         /// </summary>
-        /// <param name="advancesBases">進塁する数。</param>
-        void TestHit(int advancesBases)
+        /// <param name="advanceBases">進塁する数。</param>
+        void TestHit(int advanceBases)
         {
-            RunnerMove(advancesBases);
+            RunnerMove(advanceBases);
             Debug.Log("ランナーの数は : " + m_runners.Count);
         }
 
         IEnumerator RunningAnim(Runner runner, BaseName nextBase, float speed)
         {
-            float tmp = 0.0f;
-            Vector3 finishPosi = basePositions[nextBase];
-            Vector3 nowPosi = runner.GetRunnerObj.transform.position;
-            while (tmp <= 1.0f)
+            var tmp = 0.0f;
+            var finishPosi = Vector3.zero;
+            var nowPosi = runner.GetRunnerObj.transform.position;
+            var relayPositions = runner.GetRelayPoints;
+            for (int i = 0; i < relayPositions.Count; i++)
             {
-                runner.GetRunnerObj.transform.position = Vector3.Lerp(nowPosi, finishPosi, tmp);
-                tmp += speed * Time.deltaTime;
+                finishPosi = relayPositions[i];
+                while (tmp <= 1.0f)
+                {
+                    runner.GetRunnerObj.transform.position = Vector3.Lerp(nowPosi, finishPosi, tmp);
+                    tmp += speed * Time.deltaTime;
 
-                yield return null;
+                    yield return null;
+                }
+                nowPosi = runner.GetRunnerObj.transform.position;
+                tmp = 0.0f;
             }
+            
+            runner.GetRunnerObj.transform.position = finishPosi;
+            runner.DeleteAllRelayPoint();
 
             if (nextBase == BaseName.Home)
             {
@@ -127,31 +147,21 @@ namespace Katsumata
         Home, First, Second, Third
     }
 
-    public struct RunnerBase
-    {
-        BaseName m_baseName;//ベースの名前
-        Vector3 m_position;//座標
-
-        public RunnerBase(BaseName baseName, Vector3 posi)
-        {
-            m_baseName = baseName;
-            m_position = posi;
-        }
-    }
 
     /// <summary>
     /// 走る人
     /// </summary>
     public class Runner
     {
-        BaseName m_basePosi = BaseName.Home;
+        BaseName m_nowBaseName = BaseName.Home;
         GameObject m_body;
+        List<Vector3> m_relayPoints = new List<Vector3>();//中継地点の登録リスト
 
         public BaseName GetBasePosi
         {
             get
             {
-                return m_basePosi;
+                return m_nowBaseName;
             }
         }
 
@@ -163,25 +173,31 @@ namespace Katsumata
             }
         }
 
+        public List<Vector3> GetRelayPoints
+        {
+            get
+            {
+                return m_relayPoints;
+            }
+        }
+
         /// <summary>
         /// コンストラクター
         /// </summary>
         /// <param name="basePosi"></param>
         public Runner(BaseName basePosi, GameObject body)
         {
-            m_basePosi = basePosi;
+            m_nowBaseName = basePosi;
             m_body = body;
         }
 
         /// <summary>
-        /// ランナーの走る先
+        /// ランナーが出塁する
         /// </summary>
         /// <param name="totalBases">塁打数</param>
-        public async void RunningBase(Vector3 nextBasePosi)
+        public void GetOnBase()
         {
-            m_basePosi++;
-            //m_body.transform.position = nextBasePosi;
-            //await TestRunningAnimation(nextBasePosi);
+            m_nowBaseName++;
         }
 
         //UniTask TestRunningAnimation(Vector3 nextBasePosi)
@@ -189,5 +205,19 @@ namespace Katsumata
         //    float t = 0.0f;
         //    Vector3.Lerp(m_body.transform.position, nextBasePosi, t);
         //}
+
+        /// <summary>
+        /// 中継地点の追加。複数の累を跨いで走るアニメーションを行うため
+        /// </summary>
+        /// <param name="position"></param>
+        public void RegisterRelayPoint(Vector3 position)
+        {
+            m_relayPoints.Add(position);
+        }
+
+        public void DeleteAllRelayPoint()
+        {
+            m_relayPoints.Clear();
+        }
     }
 }
