@@ -7,7 +7,7 @@ using System.Threading;
 
 public class RunnnerController : MonoBehaviour
 {
-    ScoreManager m_scoreManager = new ScoreManager();
+    [SerializeField] ScoreManager m_scoreManager;
 
     //先に出ていた人から消えていく（ホームベースに戻る）のでキューで処理する
     List<Runner> m_runners = new List<Runner>();
@@ -22,7 +22,6 @@ public class RunnnerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_scoreManager = GetComponent<ScoreManager>();
         RunnersInit();
         if (BaseBallLogic.Instance)
         {
@@ -118,7 +117,7 @@ public class RunnnerController : MonoBehaviour
     }
 
     /// <summary>
-    /// スリーアウトのときに呼ばれる関数
+    /// スリーアウトのときに呼ばれる関数。これからtaskを追加するかも知れないのでUniTaskにしてる
     /// </summary>
     /// <returns></returns>
     async UniTask ResetRunners()
@@ -145,6 +144,9 @@ public class RunnnerController : MonoBehaviour
         Vector3 rotatePoint;//移動中、移動後の向き
         var nowPosi = runner.GetRunnerObj.transform.position;//現在の座標
         var relayPositions = runner.GetRelayPoints;//中継地点、最終目的地の座標を格納するList
+
+        float preTime = Time.time;
+        float nowTime;
         for (int i = 0; i < relayPositions.Count; i++)
         {
             finishPosi = relayPositions[i];
@@ -159,8 +161,10 @@ public class RunnnerController : MonoBehaviour
                 nowPosi.x = Mathf.Lerp(movex, finishPosi.x, moveTime);
                 nowPosi.z = Mathf.Lerp(movez, finishPosi.z, moveTime);
                 runner.GetRunnerObj.transform.position = nowPosi;
-                moveTime += speed;
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellation_token);
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellation_token);
+                nowTime = Time.time;
+                moveTime += speed * (Mathf.Abs(nowTime - preTime));//Time.deltatimeに変わるものを生成している
+                preTime = nowTime;
             }
             moveTime = 0.0f;
         }

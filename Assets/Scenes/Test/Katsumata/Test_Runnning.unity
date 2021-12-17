@@ -269,12 +269,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabedceb1bf03c64289ebc36dded890e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_scoreManager: {fileID: 248216655}
   m_runnerObj: {fileID: 8917963338361553295, guid: adcf01a4c10237945b9d8562c5e31256, type: 3}
   m_homeBase: {fileID: 1923613788}
   m_base1: {fileID: 797450554}
   m_base2: {fileID: 2127108248}
   m_base3: {fileID: 1922665218}
-  m_moveSpeed: 0.003
+  m_moveSpeed: 1
 --- !u!4 &248216654
 Transform:
   m_ObjectHideFlags: 0
