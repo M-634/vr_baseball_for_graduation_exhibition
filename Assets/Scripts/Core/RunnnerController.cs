@@ -20,7 +20,6 @@ namespace Katsumata
         [SerializeField] GameObject m_base3;
         Dictionary<BaseName, Vector3> m_basePositions = new Dictionary<BaseName, Vector3>();
         [SerializeField] float m_moveSpeed = 1.0f;
-        bool m_isRunning = false;
 
         // Start is called before the first frame update
         void Start()
@@ -78,6 +77,7 @@ namespace Katsumata
             //すべてのランナーを走らせる
             for (int i = 0; i < m_runners.Count; i++)
             {
+                //ヒットで１回、ツーベースヒットで２回、スリーベースヒットで３回、ホームランで４回繰り返す
                 for (int j = 0; j < hitNum; j++)
                 {
                     var nowBase = m_runners[i].GetBasePosi;
@@ -106,19 +106,24 @@ namespace Katsumata
             uniTasks.Clear();
         }
 
-        /// <summary>
-        /// 仮のヒット関数
-        /// </summary>
-        /// <param name="advanceBases">進塁する数。</param>
-        void TestHit(int advanceBases)
-        {
-            if (!m_isRunning)
-            {
-                RunnerMove(advanceBases);
-                Debug.Log("ランナーの数は : " + m_runners.Count);
-            }
-        }
+        ///// <summary>
+        ///// 仮のヒット関数
+        ///// </summary>
+        ///// <param name="advanceBases">進塁する数。</param>
+        //void TestHit(int advanceBases)
+        //{
+        //    if (!m_isRunning)
+        //    {
+        //        RunnerMove(advanceBases);
+        //        Debug.Log("ランナーの数は : " + m_runners.Count);
+        //    }
+        //}
 
+        /// <summary>
+        /// ヒット時に呼ばれる関数
+        /// </summary>
+        /// <param name="advanceBases"></param>
+        /// <returns></returns>
         async UniTask Hit(int advanceBases)
         {
             await RunnerMove(advanceBases);
