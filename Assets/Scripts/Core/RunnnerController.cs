@@ -72,6 +72,7 @@ namespace Katsumata
 
         async UniTask RunnerMove(int hitNum)
         {
+            var uniTasks = new List<UniTask>();
             //ランナーインスタンスを追加する
             m_runners.Add(new Runner(BaseName.Home, Instantiate(m_runnerObj)));
             //すべてのランナーを走らせる
@@ -84,8 +85,7 @@ namespace Katsumata
                     {
                         m_runners[i].GetOnBase();//ホームに進む
                         m_runners[i].RegisterRelayPoint(m_basePositions[BaseName.Home]);
-                        //StartCoroutine(RunningAnim(m_runners[i], BaseName.Home, m_moveSpeed));
-                        RunningAnimTask(m_runners[i], BaseName.Home, m_moveSpeed);
+                        uniTasks.Add(RunningAnimTask(m_runners[i], BaseName.Home, m_moveSpeed));
                         m_runners.RemoveAt(i);
                         i--;
                         break;
@@ -97,13 +97,13 @@ namespace Katsumata
                         m_runners[i].RegisterRelayPoint(m_basePositions[nowBase]);
                         if (j == hitNum - 1)
                         {
-                            //StartCoroutine(RunningAnim(m_runners[i], nowBase, m_moveSpeed));
-                            RunningAnimTask(m_runners[i], nowBase, m_moveSpeed);
+                            uniTasks.Add(RunningAnimTask(m_runners[i], nowBase, m_moveSpeed));
                         }
                     }
                 }
             }
-
+            await UniTask.WhenAll(uniTasks);
+            uniTasks.Clear();
         }
 
         /// <summary>
@@ -123,57 +123,72 @@ namespace Katsumata
         {
             await RunnerMove(advanceBases);
             Debug.Log("Unitask完了! ランナーの数は : " + m_runners.Count);
-            
         }
 
-        IEnumerator RunningAnim(Runner runner, BaseName nextBase, float speed)
-        {
-            m_isRunning = true;
-            var tmp = 0.0f;
-            Vector3 finishPosi;
-            var nowPosi = runner.GetRunnerObj.transform.position;
-            var relayPositions = runner.GetRelayPoints;
-            for (int i = 0; i < relayPositions.Count; i++)
-            {
-                finishPosi = relayPositions[i];
-                while (tmp <= 1.0f)
-                {
-                    runner.GetRunnerObj.transform.position = Vector3.Lerp(nowPosi, finishPosi, tmp);
-                    tmp += speed * Time.deltaTime;
+        //IEnumerator RunningAnim(Runner runner, BaseName nextBase, float speed)
+        //{
+        //    m_isRunning = true;
+        //    var tmp = 0.0f;
+        //    Vector3 finishPosi;
+        //    var nowPosi = runner.GetRunnerObj.transform.position;
+        //    var relayPositions = runner.GetRelayPoints;
+        //    for (int i = 0; i < relayPositions.Count; i++)
+        //    {
+        //        finishPosi = relayPositions[i];
+        //        while (tmp <= 1.0f)
+        //        {
+        //            runner.GetRunnerObj.transform.position = Vector3.Lerp(nowPosi, finishPosi, tmp);
+        //            tmp += speed * Time.deltaTime;
 
-                    yield return null;
-                }
-                nowPosi = runner.GetRunnerObj.transform.position;
-                tmp = 0.0f;
-            }
+        //            yield return null;
+        //        }
+        //        nowPosi = runner.GetRunnerObj.transform.position;
+        //        tmp = 0.0f;
+        //    }
 
-            runner.DeleteAllRelayPoint();
+        //    runner.DeleteAllRelayPoint();
 
-            if (nextBase == BaseName.Home)
-            {
-                Destroy(runner.GetRunnerObj);
-            }
-            m_isRunning = false;
-            yield break;
-        }
+        //    if (nextBase == BaseName.Home)
+        //    {
+        //        Destroy(runner.GetRunnerObj);
+        //    }
+        //    m_isRunning = false;
+        //    yield break;
+        //}
 
+        /// <summary>
+        /// 移動するアニメーションを制御する
+        /// </summary>
+        /// <param name="runner"></param>
+        /// <param name="nextBase"></param>
+        /// <param name="speed"></param>
+        /// <param name="cancellation_token"></param>
+        /// <returns></returns>
         async UniTask RunningAnimTask(Runner runner, BaseName nextBase, float speed, CancellationToken cancellation_token = default)
         {
-            var tmp = 0.0f;
-            Vector3 finishPosi;
-            var nowPosi = runner.GetRunnerObj.transform.position;
-            var relayPositions = runner.GetRelayPoints;
+            var moveTime = 0.0f;
+            Vector3 finishPosi;//移動先の座標
+            Vector3 rotatePoint;//移動中、移動後の向き
+            var nowPosi = runner.GetRunnerObj.transform.position;//現在の座標
+            var relayPositions = runner.GetRelayPoints;//中継地点、最終目的地の座標を格納するList
             for (int i = 0; i < relayPositions.Count; i++)
             {
                 finishPosi = relayPositions[i];
-                while (tmp <= 1.0f)
+                rotatePoint = finishPosi;
+                rotatePoint.y = nowPosi.y;
+                runner.GetRunnerObj.transform.LookAt(rotatePoint);
+
+                float movex = nowPosi.x;
+                float movez = nowPosi.z;
+                while (moveTime <= 1.0f)
                 {
-                    runner.GetRunnerObj.transform.position = Vector3.Lerp(nowPosi, finishPosi, tmp);
-                    tmp += speed * Time.deltaTime;
+                    nowPosi.x = Mathf.Lerp(movex, finishPosi.x, moveTime);
+                    nowPosi.z = Mathf.Lerp(movez, finishPosi.z, moveTime);
+                    runner.GetRunnerObj.transform.position = nowPosi;
+                    moveTime += speed;
                     await UniTask.Yield(PlayerLoopTiming.Update, cancellation_token);
                 }
-                nowPosi = runner.GetRunnerObj.transform.position;
-                tmp = 0.0f;
+                moveTime = 0.0f;
             }
 
             runner.DeleteAllRelayPoint();
@@ -186,13 +201,14 @@ namespace Katsumata
 
                 Destroy(runner.GetRunnerObj);
             }
+
+            rotatePoint = m_basePositions[BaseName.Home];
+            rotatePoint.y = nowPosi.y;
+            runner.GetRunnerObj.transform.LookAt(rotatePoint);
             return;
         }
 
     }
-
-
-
 
     public enum BaseName
     {
@@ -251,12 +267,6 @@ namespace Katsumata
         {
             m_nowBaseName++;
         }
-
-        //UniTask TestRunningAnimation(Vector3 nextBasePosi)
-        //{
-        //    float t = 0.0f;
-        //    Vector3.Lerp(m_body.transform.position, nextBasePosi, t);
-        //}
 
         /// <summary>
         /// 中継地点の追加。複数の累を跨いで走るアニメーションを行うため
