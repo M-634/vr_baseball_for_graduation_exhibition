@@ -106,7 +106,7 @@ public class Ball : MonoBehaviour
         if (onHitBat)
         {
             m_rb.useGravity = true;
-            if (m_rb.velocity.magnitude <= 0.3f)
+            if (m_rb.velocity.magnitude <= 0.8f)
             {
                 m_arrivalPoint.transform.position = transform.position;
                 m_arrivalPoint.SetActive(true);
@@ -152,7 +152,7 @@ public class Ball : MonoBehaviour
             if (hit.collider.gameObject.CompareTag("BatMesh"))
             {
                 onHitBat = true;
-               
+
                 Debug.Log("Hit bat");
             }
             //m_hitTime = Time.time;
@@ -308,7 +308,10 @@ public class Ball : MonoBehaviour
     {
         m_catcherPos.transform.position = m_initCatcherPos;
         m_ballTrail.Clear();
-        BaseBallLogic.Instance.EndMoveBall();
+        if (BaseBallLogic.Instance != null)
+        {
+            BaseBallLogic.Instance.EndMoveBall();
+        }
         onHitBat = false;
         m_rb.useGravity = true;
     }
