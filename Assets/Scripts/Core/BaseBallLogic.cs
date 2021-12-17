@@ -17,9 +17,9 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
 
-    /// <summary>判定処理が終わった時に飛ばすイベント</summary>
+    /// <summary>判定処理が終わった時にUIにメッセージを飛ばすイベント</summary>
     public event Func<JudgeType, UniTask> OnSendProcessMessage = default;
-
+    /// <summary>ボールの打球判定が終わったらランナーを走らせるイベント</summary>
     public event Func<JudgeType, UniTask> OnProcessRunner = default;
 
 
@@ -39,9 +39,25 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     /// </summary>
     public void PlayBall()
     {
+        //判定周りのフラグを初期化.
         isFoul = false;
         m_lastjudgeType = JudgeType.None;
+        //Funcの初期化処理.
+        OnProcessRunner += InitFuncMethod;
+        OnSendProcessMessage += InitFuncMethod;
+        //ボールを投げる.
         OnThrowBall?.Invoke();
+    }
+
+    /// <summary>
+    /// FuckとUniTaskを使ってイベント処理を行う際のデフォルトメソッド.
+    /// </summary>
+    /// <param name="arg"></param>
+    /// <returns></returns>
+    private async UniTask InitFuncMethod(JudgeType arg)
+    {
+        await UniTask.WaitForEndOfFrame();
+        Debug.Log("Initialize func methods...");
     }
 
 
@@ -90,16 +106,7 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     private async void Process()
     {
         UniTask processtask = default;
-        //塁を進む処理
-        //if (m_lastjudgeType == JudgeType.Hit || m_lastjudgeType == JudgeType.TwoBase || m_lastjudgeType == JudgeType.ThreeBase)
-        //{
-        //    processtask = HitBall();
-        //}
-        ////ホームラン
-        //else if (m_lastjudgeType == JudgeType.HomeRun)
-        //{
-        //    processtask = HomeRun();
-        //}
+       
         //ボールかストライクのカウントする
         if (m_lastjudgeType == JudgeType.Ball || m_lastjudgeType == JudgeType.Strike || m_lastjudgeType == JudgeType.Foul)
         {
@@ -110,9 +117,10 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         {
             processtask = Out();
         }
+        //ヒット　or ホームラン時
         else
         {
-            processtask = OnProcessRunner.Invoke(m_lastjudgeType);
+           processtask = OnProcessRunner.Invoke(m_lastjudgeType);
         }
 
         //uiに判定結果を表示する.
@@ -137,9 +145,6 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         await UniTask.WaitForEndOfFrame();
     }
 }
-
-
-
 
 
 /// <summary>
