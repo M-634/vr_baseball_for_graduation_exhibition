@@ -152,7 +152,7 @@ public class Ball : MonoBehaviour
             if (hit.collider.gameObject.CompareTag("BatMesh"))
             {
                 onHitBat = true;
-
+                m_rb.useGravity = true;
                 Debug.Log("Hit bat");
             }
             //m_hitTime = Time.time;
@@ -277,6 +277,14 @@ public class Ball : MonoBehaviour
             m_rb.useGravity = false;
         }
         m_ballType = (BallType)ballType;
+    }
+
+    /// <summary>
+    /// ボールをリセットする関数
+    /// </summary>
+    public void ResetBall()
+    {
+        gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
