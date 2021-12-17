@@ -34,7 +34,7 @@ public class ScoreManager : MonoBehaviour
 
     public void AddScore()
     {
-        m_score.m_scorePoint++;
+        m_score.AddScore();
         m_score.CalAnnualIncome();
     }
 }
@@ -59,9 +59,9 @@ public class Score
     /// ìæì_Çí«â¡Ç∑ÇÈä÷êî
     /// </summary>
     /// <param name="addScore"></param>
-    public void AddScore(int addScore)
+    public void AddScore()
     {
-        m_scorePoint += addScore;
+        m_scorePoint++;
     }
 
     /// <summary>

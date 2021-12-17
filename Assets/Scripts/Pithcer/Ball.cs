@@ -13,6 +13,10 @@ public class Ball : MonoBehaviour
 {
     /// <summary>ボールを投げ込む位置</summary>
     [SerializeField] GameObject m_catcherPos;
+    /// <summary>キャッチャーの初期化処理</summary>
+    Vector3 m_initCatcherPos;
+    /// <summary>ボールが消える瞬間に出るエフェクト</summary>
+    [SerializeField] GameObject m_arrivalPoint;
 
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
@@ -23,9 +27,10 @@ public class Ball : MonoBehaviour
     /// <summary>変化させるタイミング</summary>
     [SerializeField] float m_changeTime = 0.6f;
 
-    // ボールの速度
+    /// <summary>ボールをスピード</summary>
     float m_speed;
 
+    /// <summary>ボールを投げる位置</summary>
     [SerializeField] GameObject m_throwPos;
     /// <summary>スピードの計測位置</summary>
     [SerializeField] GameObject m_speedGun;
@@ -37,6 +42,7 @@ public class Ball : MonoBehaviour
 
     Vector3 m_previousPos;
 
+    /// <summary>バットに当たったかどうか</summary>
     bool onHitBat;
 
     #region Ball Type Direction
@@ -67,24 +73,45 @@ public class Ball : MonoBehaviour
 
     #endregion
 
+    #region Magic Ball
+    /// <summary>魔球かどうか</summary>
+    bool m_isMagicBall = false;
+
+    /// <summary>魔球のスピード</summary>
+    [SerializeField] float m_mBSpeed = 1f;
+
+    #endregion
+
     /// <summary>投げている球種を表示するテキスト</summary>
     [SerializeField] Text m_ballTypeText;
 
-    Rigidbody m_rb;
+    [SerializeField] Rigidbody m_rb;
 
     //float m_hitTime;
 
     //public event Action OnThrowAction = default;
 
+    /// <summary>ボールの軌跡</summary>
     [SerializeField] TrailRenderer m_ballTrail;
+
+    private void Start()
+    {
+        m_initCatcherPos = new Vector3(0, 0, 21.5f);
+    }
 
     private void Update()
     {
         if (!onHitBat) return;
 
-        if (m_rb.velocity.magnitude <= 0.3f)
+        if (onHitBat)
         {
-            gameObject.SetActive(false);
+            m_rb.useGravity = true;
+            if (m_rb.velocity.magnitude <= 0.3f)
+            {
+                m_arrivalPoint.transform.position = transform.position;
+                m_arrivalPoint.SetActive(true);
+                gameObject.SetActive(false);
+            }
         }
     }
 
@@ -93,6 +120,18 @@ public class Ball : MonoBehaviour
         if (m_isCurve)
         {
             m_rb.AddForceAtPosition(m_changeCurveDirection * 1, m_catcherPos.transform.position);
+        }
+
+        if (m_ballType == BallType.WhiteBall)
+        {
+            transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 100f) * 0.5f, transform.position.z);
+
+            m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+        }
+        else if (m_ballType == BallType.WanderWhiteBall)
+        {
+            transform.position = new Vector3(Mathf.Sin(Time.time * 30f), transform.position.y, transform.position.z);
+            m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
         }
 
         HitCheck();
@@ -113,6 +152,7 @@ public class Ball : MonoBehaviour
             if (hit.collider.gameObject.CompareTag("BatMesh"))
             {
                 onHitBat = true;
+               
                 Debug.Log("Hit bat");
             }
             //m_hitTime = Time.time;
@@ -192,6 +232,23 @@ public class Ball : MonoBehaviour
                 yield return new WaitForSeconds(m_changeTime);
                 m_rb.AddForceAtPosition(m_cutBallDirection * m_changePower, m_catcherPos.transform.position);
                 break;
+            case BallType.WhiteBall:
+                m_ballTypeText.text = "ホワイトボール";
+
+                break;
+            case BallType.WanderWhiteBall:
+                m_ballTypeText.text = "ワンダーホワイトボール";
+
+                break;
+
+            case BallType.DragonflyBall:
+                m_ballTypeText.text = "トンボール";
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.velocity = Vector3.zero;
+                yield return new WaitForSeconds(m_changeTime);
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+                break;
             default:
                 break;
         }
@@ -213,12 +270,18 @@ public class Ball : MonoBehaviour
     /// <param name="ballType"></param>
     public void ChangeBallType(int ballType)
     {
+        if (ballType >= 10)
+        {
+            m_isMagicBall = true;
+
+            m_rb.useGravity = false;
+        }
         m_ballType = (BallType)ballType;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-       
+
         if (other.gameObject.tag == "SpeedGun")
         {
             StopCoroutine(Timer());
@@ -231,21 +294,23 @@ public class Ball : MonoBehaviour
 
     private void OnEnable()
     {
-        if (m_rb == null)
-        {
-            m_rb = GetComponent<Rigidbody>();
-        }
         transform.position = m_throwPos.transform.position;
         m_isCurve = false;
         StartCoroutine(BallMove());
         StartCoroutine(Timer());
+        if (m_ballType == BallType.WhiteBall)
+        {
+            m_catcherPos.transform.position = new Vector3(m_catcherPos.transform.position.x, m_catcherPos.transform.position.y + 100, m_catcherPos.transform.position.z);
+        }
     }
 
     private void OnDisable()
     {
+        m_catcherPos.transform.position = m_initCatcherPos;
         m_ballTrail.Clear();
         BaseBallLogic.Instance.EndMoveBall();
         onHitBat = false;
+        m_rb.useGravity = true;
     }
 }
 
@@ -260,5 +325,8 @@ public enum BallType
     ChangeUp = 6,
     HighSpeedStraight = 7,
     RizeBall = 8,
-    CutBall = 9
+    CutBall = 9,
+    WhiteBall = 10,
+    WanderWhiteBall = 11,
+    DragonflyBall = 12
 }

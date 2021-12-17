@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Test/Test_Batter_VR.unity
     guid: 333a0623b8536f64291ea19310f52925
+  - enabled: 1
+    path: Assets/Scenes/Test/Test_Pitcher_VR.unity
+    guid: a8fa4d12991179d498d6f1c59425ccf8
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 01341aaa4285f0842a88c98d5837c055, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1a45792b2ddfa04459d1e2f18117753e, type: 2}

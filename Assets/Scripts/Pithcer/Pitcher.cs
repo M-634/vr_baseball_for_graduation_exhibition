@@ -24,7 +24,14 @@ public class Pitcher : MonoBehaviour
     /// <summary>球種番号</summary>
     int m_ballType;
 
-    [SerializeField, Header("ここをDebugで永遠ストレートの刑")] DevelopType m_type;
+    #region Debug
+    [Header("デバック")]
+
+    [SerializeField, Header("ここをDebugでデバックモード")] DevelopType m_type;
+    /// <summary>デバック時に投げさせたい球種</summary>
+    [SerializeField, Header("デバック時に投げさせたい球種")] BallType m_debugBallType;
+
+    #endregion
 
     private void Start()
     {
@@ -50,7 +57,8 @@ public class Pitcher : MonoBehaviour
 
         if (m_type == DevelopType.Debug)
         {
-            m_ballType = 0;
+            Debug.Log((int)m_debugBallType);
+            m_ballType = (int)m_debugBallType;
         }
         else
         {
