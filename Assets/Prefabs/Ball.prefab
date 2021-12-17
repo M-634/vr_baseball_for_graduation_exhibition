@@ -127,10 +127,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_catcherPos: {fileID: 0}
+  m_arrivalPoint: {fileID: 8353555002248781943, guid: cbcb441ccc6ec624fb0cd7a465cdce68, type: 3}
   m_ballType: 0
-  m_speed: 1000
+  m_force: 1000
   m_changePower: 80
   m_changeTime: 0.6
+  m_throwPos: {fileID: 0}
+  m_speedGun: {fileID: 0}
+  hitDistance: 1
   m_straightDirection: {x: 0, y: 0.2, z: 1}
   m_highSpeedStraightDirection: {x: 0, y: 0.12, z: 1.5}
   m_curveDirection: {x: 0.18, y: 0.36, z: 1}
@@ -142,7 +146,10 @@ MonoBehaviour:
   m_changeUpDirection: {x: 0, y: -0.1, z: -1.5}
   m_rizeBallDirection: {x: 0, y: 0.8, z: 3}
   m_cutBallDirection: {x: -0.8, y: 0, z: 0}
+  m_mBSpeed: 1
   m_ballTypeText: {fileID: 0}
+  m_rb: {fileID: 2024692008643975626}
+  m_ballTrail: {fileID: 0}
 --- !u!96 &2024692008643975617
 TrailRenderer:
   serializedVersion: 2
