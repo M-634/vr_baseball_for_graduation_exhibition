@@ -20,6 +20,8 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     /// <summary>判定処理が終わった時に飛ばすイベント</summary>
     public event Func<JudgeType, UniTask> OnSendProcessMessage = default;
 
+    public event Func<JudgeType, UniTask> OnProcessRunner = default;
+
 
     private JudgeType m_lastjudgeType;
 
@@ -89,17 +91,17 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     {
         UniTask processtask = default;
         //塁を進む処理
-        if (m_lastjudgeType == JudgeType.Hit || m_lastjudgeType == JudgeType.TwoBase || m_lastjudgeType == JudgeType.ThreeBase)
-        {
-            processtask = HitBall();
-        }
-        //ホームラン
-        else if (m_lastjudgeType == JudgeType.HomeRun)
-        {
-            processtask = HomeRun();
-        }
+        //if (m_lastjudgeType == JudgeType.Hit || m_lastjudgeType == JudgeType.TwoBase || m_lastjudgeType == JudgeType.ThreeBase)
+        //{
+        //    processtask = HitBall();
+        //}
+        ////ホームラン
+        //else if (m_lastjudgeType == JudgeType.HomeRun)
+        //{
+        //    processtask = HomeRun();
+        //}
         //ボールかストライクのカウントする
-        else if (m_lastjudgeType == JudgeType.Ball || m_lastjudgeType == JudgeType.Strike || m_lastjudgeType == JudgeType.Foul)
+        if (m_lastjudgeType == JudgeType.Ball || m_lastjudgeType == JudgeType.Strike || m_lastjudgeType == JudgeType.Foul)
         {
             processtask = CountBallORStrike();
         }
@@ -107,6 +109,10 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         else if (m_lastjudgeType == JudgeType.Out)
         {
             processtask = Out();
+        }
+        else
+        {
+            processtask = OnProcessRunner.Invoke(m_lastjudgeType);
         }
 
         //uiに判定結果を表示する.
@@ -120,16 +126,7 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         PlayBall();
     }
 
-    public async UniTask HitBall()
-    {
-        await UniTask.WaitForEndOfFrame();
-    }
-
-    public async UniTask HomeRun()
-    {
-        await UniTask.WaitForEndOfFrame();
-    }
-
+  
     public async UniTask CountBallORStrike()
     {
         await UniTask.WaitForEndOfFrame();
