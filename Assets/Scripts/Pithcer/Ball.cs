@@ -78,7 +78,7 @@ public class Ball : MonoBehaviour
     bool m_isMagicBall = false;
 
     /// <summary>魔球のスピード</summary>
-    [SerializeField] float m_mBSpeed;
+    [SerializeField] float m_mBSpeed = 1f;
 
     #endregion
 
