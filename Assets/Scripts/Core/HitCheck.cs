@@ -32,6 +32,7 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
             rb.gameObject.SetActive(false);
         }
         BaseBallLogic.Instance.UpdateJudgeType(judgeType);
+        isHit = true;
     }
 }
 

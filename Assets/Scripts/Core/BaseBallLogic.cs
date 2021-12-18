@@ -24,12 +24,18 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
 
     bool isFoul = false;//ファール判定が出たら更新しないためのフラグ
 
-    private void Start()
-    {
-        //game start!!
-        PlayBall();
-    }
+    [Header("実行後にチェックを入れるとPlayBall。一度チェック入れたらいじらないこと")]
+    public bool isDebug = false;
+    private bool init = true;
 
+    private void Update()
+    {
+        if (isDebug && init)
+        {
+            PlayBall();
+            init = false;
+        }
+    }
 
     /// <summary>
     /// ピッチャーが球を投げるのを開始するメンバー関数.
