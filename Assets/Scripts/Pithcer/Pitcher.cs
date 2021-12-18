@@ -62,7 +62,7 @@ public class Pitcher : MonoBehaviour
         }
         else
         {
-            m_ballType = Random.Range(0, 10);
+            m_ballType = Random.Range(0, 13);
         }
 
         // アニメーションのせいで位置がずれまくるので補正
