@@ -21,13 +21,13 @@ public class Ball : MonoBehaviour
     /// <summary>球種</summary>
     [SerializeField] public BallType m_ballType;
     /// <summary>ボールに加える力</summary>
-    [SerializeField] float m_force = 1000;
+    [SerializeField] float m_force = 1800;
     /// <summary>変化させるときの力</summary>
     [SerializeField] float m_changePower = 80;
     /// <summary>変化させるタイミング</summary>
     [SerializeField] float m_changeTime = 0.6f;
 
-    /// <summary>ボールをスピード</summary>
+    /// <summary>ボールのスピード</summary>
     float m_speed;
 
     /// <summary>ボールを投げる位置</summary>
@@ -122,18 +122,20 @@ public class Ball : MonoBehaviour
             m_rb.AddForceAtPosition(m_changeCurveDirection * 1, m_catcherPos.transform.position);
         }
 
-        if (m_ballType == BallType.WhiteBall)
+        if (m_isMagicBall)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 100f) * 0.5f, transform.position.z);
+            if (m_ballType == BallType.WhiteBall)
+            {
+                transform.position = new Vector3(transform.position.x, Mathf.Sin(Time.time * 100f) * 0.5f, transform.position.z);
 
-            m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+            }
+            else if (m_ballType == BallType.WanderWhiteBall)
+            {
+                transform.position = new Vector3(Mathf.Sin(Time.time * 30f), transform.position.y, transform.position.z);
+                m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
+            }
         }
-        else if (m_ballType == BallType.WanderWhiteBall)
-        {
-            transform.position = new Vector3(Mathf.Sin(Time.time * 30f), transform.position.y, transform.position.z);
-            m_rb.velocity = m_catcherPos.transform.position * m_mBSpeed;
-        }
-
         HitCheck();
     }
 
@@ -152,6 +154,8 @@ public class Ball : MonoBehaviour
             if (hit.collider.gameObject.CompareTag("BatMesh"))
             {
                 onHitBat = true;
+                m_isCurve = false;
+                m_isMagicBall = false;
                 m_rb.useGravity = true;
                 Debug.Log("Hit bat");
             }
@@ -234,11 +238,11 @@ public class Ball : MonoBehaviour
                 break;
             case BallType.WhiteBall:
                 m_ballTypeText.text = "ホワイトボール";
-
+                m_isMagicBall = true;
                 break;
             case BallType.WanderWhiteBall:
                 m_ballTypeText.text = "ワンダーホワイトボール";
-
+                m_isMagicBall = true;
                 break;
 
             case BallType.DragonflyBall:
