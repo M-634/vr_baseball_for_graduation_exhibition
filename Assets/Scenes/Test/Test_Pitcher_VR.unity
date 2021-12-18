@@ -2633,17 +2633,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 917472681}
   m_CullTransparentMesh: 1
---- !u!114 &950124084 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1865274847714477627, guid: b20d77e202ada6e4b94ef4c8559bc251, type: 3}
-  m_PrefabInstance: {fileID: 521143957}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a871bbcdee17fee4b9e086053aeb2eb4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &974872705
 GameObject:
   m_ObjectHideFlags: 0
@@ -4682,6 +4671,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1808968816}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1808968819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5041,21 +5042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 033b71b929c3d3247a5bbfcdc78fd8d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnThrowBall:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 950124084}
-        m_TargetAssemblyTypeName: Pitcher, Assembly-CSharp
-        m_MethodName: ThrowBall
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  isDebug: 0
 --- !u!114 &2133114785
 MonoBehaviour:
   m_ObjectHideFlags: 0
