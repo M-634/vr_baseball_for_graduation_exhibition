@@ -11,15 +11,20 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
 {
     /// <summary>何の判定を行うオブジェクトなのか予め決めておく</summary>
     [SerializeField] JudgeType judgeType;
+    private bool isHit = false;
 
     private void Start()
     {
         GetComponent<BoxCollider>().isTrigger = true;
         GetComponent<MeshRenderer>().enabled = false;
+
+        BaseBallLogic.Instance.OnThrowBall += () => isHit = false;
     }
 
     public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
     {
+        if (isHit) return;
+
         //ホームランか、場外（ファール判定）
        if(judgeType == JudgeType.HomeRun || judgeType == JudgeType.OffThePremises 
             || judgeType == JudgeType.Catcher || judgeType == JudgeType.Pitcher)
