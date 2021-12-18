@@ -35,14 +35,13 @@ public class Pitcher : MonoBehaviour
 
     private void Start()
     {
+        BaseBallLogic.Instance.OnThrowBall += () => ThrowBall();
         if (m_type == DevelopType.Debug)
         {
             m_ballLimit = 9999;
             PitcherUI.Instance.m_currentBallNum.text = "écÇËÇÃãÖêî : " + m_ballLimit.ToString();
         }
         m_ball = m_ball.GetComponent<Ball>();
-        //m_ball.OnThrowAction += () => ThrowBall();
-        //ThrowBall();
     }
 
     /// <summary>

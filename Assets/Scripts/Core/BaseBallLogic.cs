@@ -10,29 +10,32 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
 {
-
-    /// <summary>ピッチャーがボールを投げる時に発火される関数をインスペクター上で登録する変数</summary>
-    [SerializeField] UnityEventWrapperDefault OnThrowBall = default;
-
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
 
+    /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
+    public event Action OnThrowBall = default;
     /// <summary>判定処理が終わった時にUIにメッセージを飛ばすイベント</summary>
     public event Func<JudgeType, UniTask> OnSendProcessMessage = default;
     /// <summary>ボールの打球判定が終わったらランナーを走らせるイベント</summary>
     public event Func<JudgeType, UniTask> OnProcessRunner = default;
 
-
     private JudgeType m_lastjudgeType;
 
     bool isFoul = false;//ファール判定が出たら更新しないためのフラグ
 
-    private void Start()
-    {
-        //game start!!
-        PlayBall();
-    }
+    [Header("実行後にチェックを入れるとPlayBall。一度チェック入れたらいじらないこと")]
+    public bool isDebug = false;
+    private bool init = true;
 
+    private void Update()
+    {
+        if (isDebug && init)
+        {
+            PlayBall();
+            init = false;
+        }
+    }
 
     /// <summary>
     /// ピッチャーが球を投げるのを開始するメンバー関数.
