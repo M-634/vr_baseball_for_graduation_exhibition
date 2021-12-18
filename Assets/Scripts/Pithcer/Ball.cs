@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System;
 
 
@@ -29,11 +30,12 @@ public class Ball : MonoBehaviour
 
     /// <summary>ボールのスピード</summary>
     float m_speed;
-
     /// <summary>ボールを投げる位置</summary>
     [SerializeField] GameObject m_throwPos;
     /// <summary>スピードの計測位置</summary>
     [SerializeField] GameObject m_speedGun;
+    /// <summary>球速を表示するText</summary>
+    [SerializeField] TextMeshProUGUI m_ballSpeedText;
 
     /// <summary>Rayを飛ばす距離（1fでいい感じ） </summary>
     [SerializeField] float hitDistance = 1f;
@@ -299,6 +301,7 @@ public class Ball : MonoBehaviour
             StopCoroutine(Timer());
             m_speed = (m_speedGun.transform.position.z - m_throwPos.transform.position.z) / m_time;
             m_speed *= 3.6f;
+            m_ballSpeedText.text = "ball speed\n" + Mathf.Floor(m_speed) + "km";
 
             Debug.Log(Mathf.Floor(m_speed) + "km");
         }
