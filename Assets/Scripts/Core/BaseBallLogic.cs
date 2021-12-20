@@ -127,10 +127,15 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         }
 
         //uiに判定結果を表示する.
-        UniTask uguiTask = OnSendProcessMessage.Invoke(m_lastjudgeType);
+        await UniTask.WhenAll(OnSendProcessMessage.Invoke(m_lastjudgeType));
+        Debug.Log("display ui...");
+        //UniTask uguiTask = OnSendProcessMessage.Invoke(m_lastjudgeType);
 
-        //全ての判定処理が終了するのを待つ.
-        await UniTask.WhenAll(processtask, uguiTask);
+        //ランナーを走らせる
+        await UniTask.WhenAll(processtask);
+        Debug.Log("finish runner");
+
+        //全ての判定処理が終了する
         Debug.Log("end process..");
 
         //次の球を投げる.
