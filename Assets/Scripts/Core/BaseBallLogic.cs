@@ -5,6 +5,9 @@ using UnityEngine.Events;
 using System;
 using Cysharp.Threading.Tasks;
 
+//新しくかったdesktopのGitテスト用コメント
+
+
 /// <summary>
 /// 野球のルールに従って,ゲームを進行を管理するクラス
 /// </summary>
