@@ -2,52 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using System;
 
-/// <summary>
-/// 出塁しているランナー.
-/// </summary>
-public class Runner
-{
-    private GameObject runner;
-    private float speed;
-
-    public Transform CurrentPos { get; set; }
-
-    /// <summary>
-    /// コンストラクタ
-    /// </summary>
-    /// <param name="prefabObject"></param>
-    public Runner(GameObject prefabObject, float speed)
-    {
-        runner = prefabObject;
-        this.speed = speed;
-    }
-
-    /// <summary>
-    /// 次の塁まで進む
-    /// </summary>
-    /// <param name="nextPos"></param>
-    public void Move(Transform nextPos)
-    {
-        //次の塁の方向へ体を向かせる.
-        runner.transform.LookAt(nextPos, runner.transform.up);
-    }
-}
 
 /// <summary>
 /// ランナーを管理するクラス.
 /// </summary>
-public class RunnerManager : MonoBehaviour
+public class RunnerManager : SingletonMonoBehaviour<RunnerManager>
 {
     /// <summary> ランナープレハブ </summary>
-    [SerializeField] GameObject m__runnerSourcePrefab = default;
+    [SerializeField] GameObject m_runnerSourcePrefab = default;
     /// <summary>0 : homebase, 1,2,3 : 各数字に対応したベース</summary>
     [SerializeField] Transform[] m_basePostions;
     /// <summary>ランナーの速度</summary>
-    [SerializeField] float moveSpeed = 1f;
+    [SerializeField] float m_moveDuration = 1f;
 
     /// <summary>現在出塁しているランナーのリスト</summary>
-    private List<Runner> currentRunner = new List<Runner>();
+    private List<Runner> m_currentRunner = new List<Runner>();
+
+    public Transform GetHomeBase => m_basePostions[0];
 
     // Start is called before the first frame update
     void Start()
@@ -58,23 +31,109 @@ public class RunnerManager : MonoBehaviour
         }
     }
 
-
-    private UniTask Instance_OnProcessRunner(JudgeType arg)
+    private async UniTask Instance_OnProcessRunner(JudgeType type)
     {
-        throw new System.NotImplementedException();
+        switch (type)
+        {
+            case JudgeType.Hit:
+                MoveRunner(1);
+                break;
+            case JudgeType.TwoBase:
+                MoveRunner(2);
+                break;
+            case JudgeType.ThreeBase:
+                MoveRunner(3);
+                break;
+            case JudgeType.HomeRun:
+                MoveRunner(4);
+                break;
+        }
+        await UniTask.Yield();
+        Debug.Log("ランナー処理を終えた");
     }
 
     /// <summary>
-    /// ランナーを動かす処理をする
+    /// ランナーを動かす命令を発行する関数.
     /// </summary>
     /// <param name="hitNumber">ヒット=1、ツーベースヒット=2、スリーベースヒット=3、ホームラン=4</param>
     public void MoveRunner(int hitNumber)
     {
         //現在出塁しているランナーを先ずは走らせる.
-        for (int i = 0; i < currentRunner.Count; i++)
+        if (m_currentRunner.Count > 0)
         {
+            foreach (Runner runner in m_currentRunner)
+            {
+                Moving(hitNumber, runner).Forget();
+            }
+        }
 
+        //新しく出塁するランナーをインスタンス化させて、ヒット数だけ走らせる.
+        Runner newRunner = Instantiate(m_runnerSourcePrefab, m_basePostions[0].position, Quaternion.identity).AddComponent<Runner>();
+        Moving(hitNumber, newRunner).Forget();
+
+        //出塁ランナーリストへ追加する.
+        m_currentRunner.Add(newRunner);
+    }
+
+    /// <summary>
+    /// 実際にランナーをヒット数だけ走らせる関数.
+    /// </summary>
+    /// <param name="hitNumber"></param>
+    /// <param name="runner"></param>
+    private async UniTask Moving(int hitNumber, Runner runner)
+    {
+        //ヒット数分、ランナーを移動させる.
+        for (int i = 0; i < hitNumber; i++)
+        {
+            int nextBaseIndex = runner.currentBaseNumber + 1;
+            //ホームベースに着いたら、得点処理をしてランナーを削除
+            if (nextBaseIndex > 3)
+            {
+                nextBaseIndex = 0;
+                runner.Move(m_basePostions[nextBaseIndex], m_moveDuration);
+                await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
+                DeleteRunner(runner);
+                AddScore();
+                break;
+            }
+            else
+            {
+                runner.Move(m_basePostions[nextBaseIndex], m_moveDuration);
+                await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
+                runner.currentBaseNumber++;
+            }
         }
     }
-   
+
+
+    /// <summary>
+    /// 引数に指定したランナーを削除する関数.
+    /// </summary>
+    /// <param name="runner"></param>
+    private void DeleteRunner(Runner runner)
+    {
+        m_currentRunner.Remove(runner);
+        Destroy(runner.gameObject);
+    }
+
+    /// <summary>
+    /// 出塁している全てのランナーを削除する関数.
+    /// </summary>
+    public void ResetRunner()
+    {
+        if (m_currentRunner.Count == 0) return;
+
+        foreach (var runner in FindObjectsOfType<Runner>())
+        {
+            DeleteRunner(runner);
+        }
+         
+    }
+
+    private void AddScore()
+    {
+        //得点処理
+        Debug.Log("得点処理...");
+    }
+
 }

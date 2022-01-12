@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -330,6 +330,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 760053d287a8f7045ba8badcecaaa3df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_runnerSourcePrefab: {fileID: 8917963338361553295, guid: adcf01a4c10237945b9d8562c5e31256, type: 3}
+  m_basePostions:
+  - {fileID: 1923613792}
+  - {fileID: 467005681}
+  - {fileID: 1760542985}
+  - {fileID: 522288708}
+  m_moveDuration: 1
 --- !u!4 &248216654
 Transform:
   m_ObjectHideFlags: 0
@@ -440,9 +447,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RunnnerController, Assembly-CSharp
-        m_MethodName: ResetRunnerButton
+      - m_Target: {fileID: 248216653}
+        m_TargetAssemblyTypeName: RunnerManager, Assembly-CSharp
+        m_MethodName: ResetRunner
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -573,14 +580,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RunnnerController, Assembly-CSharp
-        m_MethodName: HitButton
-        m_Mode: 1
+      - m_Target: {fileID: 248216653}
+        m_TargetAssemblyTypeName: RunnerManager, Assembly-CSharp
+        m_MethodName: MoveRunner
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -787,14 +794,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RunnnerController, Assembly-CSharp
-        m_MethodName: HomeRunButton
-        m_Mode: 1
+      - m_Target: {fileID: 248216653}
+        m_TargetAssemblyTypeName: RunnerManager, Assembly-CSharp
+        m_MethodName: MoveRunner
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 4
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1080,14 +1087,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RunnnerController, Assembly-CSharp
-        m_MethodName: ThreeBaseHitButton
-        m_Mode: 1
+      - m_Target: {fileID: 248216653}
+        m_TargetAssemblyTypeName: RunnerManager, Assembly-CSharp
+        m_MethodName: MoveRunner
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1464,14 +1471,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: RunnnerController, Assembly-CSharp
-        m_MethodName: TwoBaseHitButton
-        m_Mode: 1
+      - m_Target: {fileID: 248216653}
+        m_TargetAssemblyTypeName: RunnerManager, Assembly-CSharp
+        m_MethodName: MoveRunner
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
