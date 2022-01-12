@@ -5,8 +5,6 @@ using UnityEngine.Events;
 using System;
 using Cysharp.Threading.Tasks;
 
-//新しくかったdesktopのGitテスト用コメント
-
 
 /// <summary>
 /// 野球のルールに従って,ゲームを進行を管理するクラス
@@ -31,12 +29,23 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     public bool isDebug = false;
     private bool init = true;
 
+    float timer = 0f;
     private void Update()
     {
         if (isDebug && init)
         {
             PlayBall();
             init = false;
+        }
+
+        if(s)
+        {
+            timer += Time.deltaTime;
+            Debug.Log((int)timer);
+        }
+        else
+        {
+            timer = 0f;
         }
     }
 
@@ -55,6 +64,7 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
         OnThrowBall?.Invoke();
     }
 
+    bool s = false;
     /// <summary>
     /// FuckとUniTaskを使ってイベント処理を行う際のデフォルトメソッド.
     /// </summary>
@@ -62,8 +72,11 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
     /// <returns></returns>
     private async UniTask InitFuncMethod(JudgeType arg)
     {
-        await UniTask.WaitForEndOfFrame();
+        //await UniTask.WaitForEndOfFrame();
+        s = true;
+        await UniTask.Delay(System.TimeSpan.FromSeconds(5f));
         Debug.Log("Initialize func methods...");
+        s = false;
     }
 
 
@@ -129,18 +142,9 @@ public class BaseBallLogic : SingletonMonoBehaviour<BaseBallLogic>
            processtask = OnProcessRunner.Invoke(m_lastjudgeType);
         }
 
-        //uiに判定結果を表示する.
-        await UniTask.WhenAll(OnSendProcessMessage.Invoke(m_lastjudgeType));
-        Debug.Log("display ui...");
-        //UniTask uguiTask = OnSendProcessMessage.Invoke(m_lastjudgeType);
-
-        //ランナーを走らせる
-        await UniTask.WhenAll(processtask);
-        Debug.Log("finish runner");
-
-        //全ての判定処理が終了する
-        Debug.Log("end process..");
-
+        //uiに判定結果を表示する.//ランナーを走らせる
+        await UniTask.WhenAll(OnSendProcessMessage.Invoke(m_lastjudgeType),processtask);
+      
         //次の球を投げる.
         PlayBall();
     }
