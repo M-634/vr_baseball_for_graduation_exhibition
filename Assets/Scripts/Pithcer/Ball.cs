@@ -320,9 +320,9 @@ public class Ball : MonoBehaviour
     {
         m_catcherPos.transform.position = m_initCatcherPos;
         m_ballTrail.Clear();
-        if (BaseBallLogic.Instance != null)
+        if (GameFlowManager.Instance != null)
         {
-            BaseBallLogic.Instance.EndMoveBall();
+            GameFlowManager.Instance.EndMoveBall();
         }
         onHitBat = false;
         m_rb.useGravity = true;

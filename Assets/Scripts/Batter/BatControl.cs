@@ -115,7 +115,7 @@ public class BatControl : MonoBehaviour, IBallHitObjet
         hitCoreRatio = Mathf.Clamp01(1 - hitCoreRatio / 17);
 
         //最終的なボールに加える力を計算結果を返す（随時修正する)
-        return ballSpeed * ((justMeetRatio + hitCoreRatio) / 2) * BaseBallLogic.CoefficientOfRestitution + m_headSpeed;
+        return ballSpeed * ((justMeetRatio + hitCoreRatio) / 2) * GameFlowManager.CoefficientOfRestitution + m_headSpeed;
     }
 
 }

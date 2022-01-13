@@ -22,17 +22,13 @@ public class RunnerManager : SingletonMonoBehaviour<RunnerManager>
 
     public Transform GetHomeBase => m_basePostions[0];
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (BaseBallLogic.Instance)
-        {
-            BaseBallLogic.Instance.OnProcessRunner += Instance_OnProcessRunner;
-        }
-    }
+    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
+    int countScore = 0;
 
-    private async UniTask Instance_OnProcessRunner(JudgeType type)
+
+    private int Instance_OnProcessRunner(JudgeType type)
     {
+        countScore = 0;
         switch (type)
         {
             case JudgeType.Hit:
@@ -48,8 +44,7 @@ public class RunnerManager : SingletonMonoBehaviour<RunnerManager>
                 MoveRunner(4);
                 break;
         }
-        await UniTask.Yield();
-        Debug.Log("ランナー処理を終えた");
+        return countScore;
     }
 
     /// <summary>
@@ -93,7 +88,7 @@ public class RunnerManager : SingletonMonoBehaviour<RunnerManager>
                 runner.Move(m_basePostions[nextBaseIndex], m_moveDuration);
                 await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
                 DeleteRunner(runner);
-                AddScore();
+                countScore++;
                 break;
             }
             else
@@ -127,13 +122,8 @@ public class RunnerManager : SingletonMonoBehaviour<RunnerManager>
         {
             DeleteRunner(runner);
         }
-         
-    }
 
-    private void AddScore()
-    {
-        //得点処理
-        Debug.Log("得点処理...");
     }
-
 }
+
+

@@ -35,7 +35,7 @@ public class Pitcher : MonoBehaviour
 
     private void Start()
     {
-        BaseBallLogic.Instance.OnThrowBall += () => ThrowBall();
+        GameFlowManager.Instance.OnThrowBall += () => ThrowBall();
         if (m_type == DevelopType.Debug)
         {
             m_ballLimit = 9999;

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Events;
+
 /// <summary>
 /// 出塁しているランナー.
 /// </summary>
@@ -11,7 +13,7 @@ public class Runner : MonoBehaviour
     /// <summary>
     /// 次の塁まで進む
     /// </summary>
-    public void Move(Transform nextBase, float duration)
+    public void Move(Transform nextBase, float duration,UnityAction callBack = null)
     {
         //次の塁の方向へ体を向かせる.
         transform.LookAt(nextBase, transform.up);
@@ -24,6 +26,8 @@ public class Runner : MonoBehaviour
                 transform.position = nextBase.position;
                 //ホームベースへ向かせる
                 transform.LookAt(RunnerManager.Instance.GetHomeBase, transform.up);
+                //コールバック
+                callBack?.Invoke();
            });
     }
 }
