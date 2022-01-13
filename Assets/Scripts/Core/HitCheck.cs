@@ -18,7 +18,7 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
         GetComponent<BoxCollider>().isTrigger = true;
         GetComponent<MeshRenderer>().enabled = false;
 
-        BaseBallLogic.Instance.OnThrowBall += () => isHit = false;
+        GameFlowManager.Instance.OnThrowBall += () => isHit = false;
     }
 
     public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
@@ -31,7 +31,7 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
         {
             rb.gameObject.SetActive(false);
         }
-        BaseBallLogic.Instance.UpdateJudgeType(judgeType);
+        GameFlowManager.Instance.UpdateJudgeType(judgeType);
         isHit = true;
     }
 }

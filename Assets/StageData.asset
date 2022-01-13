@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d1413fbfe842874cb7555cb665eb5e5, type: 3}
+  m_Name: StageData
+  m_EditorClassIdentifier: 
+  stages:
+  - stageNumber: 0
+    specialStage: 0
+    ballTypes: 
+    ballNumber: 10
+    clearHitNumer: 1
+  - stageNumber: 1
+    specialStage: 0
+    ballTypes: 
+    ballNumber: 20
+    clearHitNumer: 2
+  - stageNumber: 2
+    specialStage: 1
+    ballTypes: 
+    ballNumber: 30
+    clearHitNumer: 3
+  currentStageNumber: 2
+  currentBallLeftNumer: 24
