@@ -52,11 +52,10 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         m_lastjudgeType = JudgeType.None;
 
 
-        if (stageData.CurrentStageData.ballLeftNumber > 0)
+        if (stageData.currentBallLeftNumer > 0)
         {
             //ボールを投げる.
             OnThrowBall?.Invoke();
-            stageData.CurrentStageData.ballLeftNumber--;
         }
         else
         {
@@ -92,7 +91,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     public async void EndMoveBall()
     {
         await UniTask.Delay(TimeSpan.FromSeconds(1f), ignoreTimeScale: false);
-        Debug.Log("end ball :" + m_lastjudgeType.ToString());
+        stageData.currentBallLeftNumer--;
         if (m_lastjudgeType == JudgeType.None)
         {
             Debug.LogWarning("判定結果なし");
@@ -214,24 +213,41 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
         }
 
-
         if (lastRunner)
         {
-            Debug.Log("runner　処理が終わった");
-            Debug.Log(m_countRunnerReturnHomeBase);
+            EndMove();
+        }
+    }
 
-            if (m_countRunnerReturnHomeBase >= stageData.CurrentStageData.clearHitNumer)
+    /// <summary>
+    /// ランナー処理が終わったら呼ばれる関数.
+    /// </summary>
+    private void EndMove()
+    {
+        Debug.Log("runner　処理が終わった");
+        if (m_countRunnerReturnHomeBase >= stageData.CurrentStageData.clearHitNumer)
+        {
+            Debug.Log("stage clear");
+            ResetRunner();
+
+            if (stageData.CurrentStageData.specialStage)
             {
-                Debug.Log("stage clear");
+                Debug.Log("Game Clear");
             }
             else
             {
+                //次のステージへ
+                stageData.currentStageNumber++;
+                stageData.currentBallLeftNumer = stageData.CurrentStageData.ballNumber;
+                m_countRunnerReturnHomeBase = 0;
                 PlayBall();
             }
         }
-
+        else
+        {
+            PlayBall();
+        }
     }
-
 
     /// <summary>
     /// 引数に指定したランナーを削除する関数.
