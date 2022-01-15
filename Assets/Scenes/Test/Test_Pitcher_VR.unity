@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18298689, g: 0.2286753, b: 0.30680406, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1990,7 +1990,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2047,13 +2047,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 727058422}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalRotation: {x: 0.893439, y: -0.24661972, z: -0.07852498, w: 0.36712322}
+  m_LocalPosition: {x: 0, y: 7.44, z: 15.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 38.117, y: -155.889, z: -140.698}
 --- !u!1 &754736840
 GameObject:
   m_ObjectHideFlags: 0
@@ -4585,7 +4585,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2133114784}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: BaseBallLogic, Assembly-CSharp
         m_MethodName: PlayBall
         m_Mode: 1
@@ -4933,8 +4933,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2133114783}
-  - component: {fileID: 2133114784}
   - component: {fileID: 2133114785}
+  - component: {fileID: 2133114784}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -4965,10 +4965,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2133114782}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033b71b929c3d3247a5bbfcdc78fd8d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c00d26323db75148b6191e302eea16f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stageData: {fileID: 11400000, guid: 1d107a23ed8651b4daee86194b7865e5, type: 2}
   isDebug: 0
+  m_runnerSourcePrefab: {fileID: 0}
+  m_basePostions: []
+  m_moveDuration: 1
 --- !u!114 &2133114785
 MonoBehaviour:
   m_ObjectHideFlags: 0
