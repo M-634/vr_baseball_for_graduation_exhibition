@@ -20,6 +20,6 @@ public class Ground : MonoBehaviour, IBallHitObjet
 
         //‘¬“x•ÏŠ·
         //worldÀ•Wy²ãŒü‚«‚Ì’e«Õ“Ë
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y * -1f * BaseBallLogic.CoefficientOfRestitution, rb.velocity.z);
+        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y * -1f * GameFlowManager.CoefficientOfRestitution, rb.velocity.z);
     }
 }

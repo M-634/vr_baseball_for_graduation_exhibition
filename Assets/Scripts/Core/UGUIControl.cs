@@ -20,10 +20,10 @@ public class UGUIControl : MonoBehaviour
     {
         displayJudgeText.gameObject.SetActive(false);
 
-        BaseBallLogic.Instance.OnSendProcessMessage += DisplayMessage;
+        GameFlowManager.Instance.OnSendProcessMessage += DisplayMessage;
     }
 
-    private async UniTask DisplayMessage(JudgeType judgeType)
+    private async void DisplayMessage(JudgeType judgeType)
     {
         if (judgeType == JudgeType.None)
         {
@@ -37,10 +37,8 @@ public class UGUIControl : MonoBehaviour
             displayJudgeText.text = judgeType.ToString();
         }
 
-        //判定処理を出すテキストの表示が終わったらタスク終了
         await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
         displayJudgeText.gameObject.SetActive(false);
-        Debug.Log("end UGUI task...");
     }
 
 
