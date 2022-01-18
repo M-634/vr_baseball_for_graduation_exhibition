@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 416580016}
   - component: {fileID: 416580015}
   - component: {fileID: 416580014}
-  - component: {fileID: 416580018}
   - component: {fileID: 416580017}
+  - component: {fileID: 9087320279763868523}
   m_Layer: 0
   m_Name: HomeRunZone
   m_TagString: Untagged
@@ -83,19 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &416580018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 416580013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 363cf3db74c465c41bdd6b21e6f5e8cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  zone: 1
 --- !u!64 &416580017
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -110,6 +97,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2849310862324141758, guid: 5bce6c2d2db51c046aaadb4751fa2ee8, type: 3}
+--- !u!114 &9087320279763868523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416580013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitZoneType: 4
 --- !u!1 &892131534
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 2053272382}
   - component: {fileID: 2053272381}
   - component: {fileID: 2053272385}
-  - component: {fileID: 2053272384}
+  - component: {fileID: 6853604456194453736}
   m_Layer: 0
   m_Name: FoulZone
   m_TagString: Untagged
@@ -317,7 +317,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5248717185656344581, guid: 5bce6c2d2db51c046aaadb4751fa2ee8, type: 3}
---- !u!114 &2053272384
+--- !u!114 &6853604456194453736
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -326,10 +326,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2053272380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 363cf3db74c465c41bdd6b21e6f5e8cc, type: 3}
+  m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zone: 0
+  hitZoneType: 5
 --- !u!1 &393498942662737844
 GameObject:
   m_ObjectHideFlags: 0

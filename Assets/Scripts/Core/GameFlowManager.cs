@@ -18,8 +18,6 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     public bool isDebug = false;
 
 
-    private bool init = true;
-
 
     [Header("ランナーの設定")]
     /// <summary> ランナープレハブ </summary>
@@ -29,28 +27,26 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>ランナーの速度</summary>
     [SerializeField] float m_moveDuration = 1f;
 
-    /// <summary>現在出塁しているランナーのリスト</summary>
-    private List<Runner> m_currentRunner = new List<Runner>();
-
-    public Transform GetHomeBase => m_basePostions[0];
-
-    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
-    int m_countRunnerReturnHomeBase = 0;
-
-
+    [Space(10)]
+    /// <summary>判定処理が終わった時にUIにメッセージを飛ばすイベント</summary>
+    [SerializeField] UnityEventWrapperSendText OnDisplayHitZoneMessage = default;
 
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
     /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
     public event Action OnThrowBall = default;
-    /// <summary>判定処理が終わった時にUIにメッセージを飛ばすイベント</summary>
-    public event Action<string, UnityAction> OnSendProcessMessage = default;
+  
+    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
+    int m_countRunnerReturnHomeBase = 0;
 
-    private HitType m_lastHitType;
+    private bool init = true;
 
-    public bool Out { get; set; }
-    public bool Strike { get; set; }
-    public bool Foul { get; set; }
+    private HitZoneType m_lastHitZoneType;
+
+    /// <summary>現在出塁しているランナーのリスト</summary>
+    private List<Runner> m_currentRunner = new List<Runner>();
+
+    public Transform GetHomeBase => m_basePostions[0];
 
     private void Start()
     {
@@ -72,11 +68,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     public void PlayBall()
     {
         //判定を初期する.
-        m_lastHitType = HitType.None;
-        Out = false;
-        Strike = false;
-        Foul = false;
-
+        m_lastHitZoneType = HitZoneType.None;
+      
         if (stageData.currentBallLeftNumer > 0)
         {
             //ボールを投げる.
@@ -93,10 +86,10 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>
     /// ヒット判定を更新する関数.
     /// </summary>
-    /// <param name="hitType"></param>
-    public void UpdateHitType(HitType hitType)
+    /// <param name="hitZoneType"></param>
+    public void UpdateHitType(HitZoneType hitZoneType)
     {
-        m_lastHitType = hitType;
+        m_lastHitZoneType = hitZoneType;
     }
 
     /// <summary>
@@ -110,33 +103,40 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         //各ステージの残りの球数を更新する.
         stageData.currentBallLeftNumer--;
 
-        if (m_lastHitType == HitType.None)
+        if (m_lastHitZoneType == HitZoneType.None)
         {
-            //ストライク
-            if (Strike)
-            {
-                OnSendProcessMessage.Invoke("Strike", PlayBall);
-            }
-            //アウト
-            else if (Out)
-            {
-                OnSendProcessMessage.Invoke("Out", PlayBall);
-            }
-            //ファール
-            else if (Foul)
-            {
-                OnSendProcessMessage.Invoke("Foul", PlayBall);
-            }
+            DisplayHitZoneMessage("何処にも当たらなかった.", PlayBall);
         }
-        //ホームランなら特別なイベントを発生させて、ランナーを走らせる
-        else if (m_lastHitType == HitType.HomeRun)
+        else if(m_lastHitZoneType == HitZoneType.Foul || m_lastHitZoneType == HitZoneType.Out 
+            || m_lastHitZoneType == HitZoneType.Catcher)
         {
-            OnSendProcessMessage.Invoke("HomeRun", () => MoveRunner(4));
+            //UIにテキストを送って、プレイボール.
+            DisplayHitZoneMessage(m_lastHitZoneType.ToString(), PlayBall);
         }
-        //ヒットしたら、ランナーを走らせる
         else
         {
-            OnSendProcessMessage.Invoke(m_lastHitType.ToString(), () => MoveRunner((int)m_lastHitType));
+            //UIにテキストを送って、ランナーを走らせる.
+            DisplayHitZoneMessage(m_lastHitZoneType.ToString(), () => MoveRunner((int)m_lastHitZoneType));
+        }
+    }
+
+    /// <summary>
+    /// 球のヒットゾーン判定の結果をUIに表示し,その後コールバックを呼び出す関数.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="callBack"></param>
+    private void DisplayHitZoneMessage(string text,UnityAction callBack)
+    {
+        //UIが設定されていたら、メッセージを送る.
+        if(OnDisplayHitZoneMessage != null)
+        {
+            OnDisplayHitZoneMessage.Invoke(text, callBack);
+        }
+        //設定されていないなら、コールバックだけ呼び出す,
+        else 
+        {
+            Debug.Log(text);
+            callBack.Invoke();
         }
     }
 
@@ -170,16 +170,17 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>
     /// 実際にランナーをヒット数だけ走らせる関数.
     /// </summary>
-    /// <param name="hitNumber"></param>
+    /// <param name="hitCount"></param>
     /// <param name="runner"></param>
-    private async UniTask Moving(int hitNumber, Runner runner, bool lastRunner = false)
+    private async UniTask Moving(int hitCount, Runner runner,bool lastRunner = false)
     {
+   
         //ヒット数分、ランナーを移動させる.
-        for (int i = 0; i < hitNumber; i++)
+        for (int i = 0; i < hitCount; i++)
         {
             int nextBaseIndex = runner.currentBaseNumber + 1;
             //ホームベースに着いたら、得点処理をしてランナーを削除
-            if (nextBaseIndex > 3)
+            if (nextBaseIndex == 4)
             {
                 m_countRunnerReturnHomeBase++;
                 runner.Move(m_basePostions[0], m_moveDuration, () =>
@@ -198,8 +199,10 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 
         if (lastRunner)
         {
+            await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
             EndMove();
         }
+        
     }
 
     /// <summary>

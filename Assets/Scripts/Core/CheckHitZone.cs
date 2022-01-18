@@ -2,13 +2,12 @@ using UnityEngine;
 
 
 /// <summary>
-/// ヒット判定を行うクラス.
-/// *ここで言うヒットは、ランナーが出塁することである.
+/// 球がどのゾーンにヒットしたかチェックするクラス.
 /// </summary>
-public class HitCheck : MonoBehaviour,IBallHitObjet
+public class CheckHitZone : MonoBehaviour,IBallHitObjet
 {
     /// <summary>何の判定を行うオブジェクトなのか予め決めておく</summary>
-    [SerializeField] HitType hitType;
+    [SerializeField] HitZoneType hitZoneType;
     /// <summary>ボールに一度当たったら、判定を消すフラグ</summary>
     private bool hasChecked = false;
 
@@ -22,7 +21,15 @@ public class HitCheck : MonoBehaviour,IBallHitObjet
     public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
     {
         if (hasChecked) return;
-        GameFlowManager.Instance.UpdateHitType(hitType);
+
+        //
+        GameFlowManager.Instance.UpdateHitType(hitZoneType);
+
+        //ホームラン、ファール、アウト、キャッチャーゾーンに当たったらボールのアクティブを無効にする.
+        if((int)hitZoneType >= 4)
+        {
+            rb.gameObject.SetActive(false);       
+        }
         hasChecked = true;
     }
 }

@@ -626,10 +626,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 210739815}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 363cf3db74c465c41bdd6b21e6f5e8cc, type: 3}
+  m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zone: 3
+  hitZoneType: 7
 --- !u!1 &237693471
 GameObject:
   m_ObjectHideFlags: 0
@@ -2097,7 +2097,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068ab044e01ba014fb4ef53f483c6098, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayJudgeText: {fileID: 837437515}
+  judgmentResultOfBall: {fileID: 837437515}
   displayHeadSpeedOfBatText: {fileID: 1441008567}
 --- !u!1 &754736840
 GameObject:
@@ -2454,8 +2454,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: event text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d4d933150de288b40a3303818cc2de5e, type: 2}
+  m_sharedMaterial: {fileID: 2817629196718298988, guid: d4d933150de288b40a3303818cc2de5e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2495,7 +2495,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -2915,6 +2915,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1100000036 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 393498942703726700, guid: 3bbef7a439e28e74bbfac03d8351ea6a, type: 3}
+  m_PrefabInstance: {fileID: 393498943112181826}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1117384016
 GameObject:
   m_ObjectHideFlags: 0
@@ -4970,7 +4975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitType: 2
+  hitZoneType: 1
 --- !u!65 &1797005743
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5041,7 +5046,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1797005741}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.256, y: 0.2, z: 4.93}
+  m_LocalPosition: {x: 0.256, y: 0.2, z: 12.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5778,6 +5783,115 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2020335717}
   m_CullTransparentMesh: 1
+--- !u!1 &2029321028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2029321033}
+  - component: {fileID: 2029321032}
+  - component: {fileID: 2029321031}
+  - component: {fileID: 2029321030}
+  - component: {fileID: 2029321029}
+  m_Layer: 0
+  m_Name: HomeRunZoneOffThePremises
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2029321029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029321028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitZoneType: 4
+--- !u!65 &2029321030
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029321028}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &2029321031
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029321028}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &2029321032
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029321028}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &2029321033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2029321028}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.256, y: 50, z: -122.4}
+  m_LocalScale: {x: 375.57, y: 100, z: 10}
+  m_Children: []
+  m_Father: {fileID: 1100000036}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2059509978
 GameObject:
   m_ObjectHideFlags: 0
@@ -5896,6 +6010,21 @@ MonoBehaviour:
   - {fileID: 6089269057306395591}
   - {fileID: 6089269055339379850}
   m_moveDuration: 1
+  OnDisplayHitZoneMessage:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 705893122}
+        m_TargetAssemblyTypeName: UGUIControl, Assembly-CSharp
+        m_MethodName: DisplayHitZoneMessage
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2136260279
 GameObject:
   m_ObjectHideFlags: 0
@@ -6160,6 +6289,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 416580017, guid: 3bbef7a439e28e74bbfac03d8351ea6a, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 416580017, guid: 3bbef7a439e28e74bbfac03d8351ea6a, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2053272385, guid: 3bbef7a439e28e74bbfac03d8351ea6a, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 393498942703726700, guid: 3bbef7a439e28e74bbfac03d8351ea6a, type: 3}
       propertyPath: m_RootOrder
       value: 15
@@ -6534,7 +6675,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_debugRotatePower: 0
-  m_isJustKeepHittingBallBack: 0
+  m_isJustKeepHittingBallBack: 1
 --- !u!4 &5683649213036649976
 Transform:
   m_ObjectHideFlags: 0

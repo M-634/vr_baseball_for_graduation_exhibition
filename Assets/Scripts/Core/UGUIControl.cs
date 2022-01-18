@@ -10,7 +10,8 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public class UGUIControl : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI displayJudgeText = default;
+    /// <summary>球の判定結果を表示するテキスト</summary>
+    [SerializeField] TextMeshProUGUI judgmentResultOfBall = default;
 
     [Header("デバック用テキスト")]
     [SerializeField] TextMeshProUGUI displayHeadSpeedOfBatText = default;
@@ -18,21 +19,26 @@ public class UGUIControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        displayJudgeText.gameObject.SetActive(false);
-
-        GameFlowManager.Instance.OnSendProcessMessage += DisplayMessage;
+        judgmentResultOfBall.gameObject.SetActive(false);
     }
 
-    private async void DisplayMessage(string message,UnityAction callBack = null)
-    {
-        if (displayJudgeText)
-        {
-            displayJudgeText.gameObject.SetActive(true);
-            displayJudgeText.text = message;
-        }
-        await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
-        displayJudgeText.gameObject.SetActive(false);
+    /// <summary>
+    /// ピッチャーがボールを投げた後の球の判定を表示する関数.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="callBack"></param>
 
+    public async void DisplayHitZoneMessage(string message,UnityAction callBack = null)
+    {
+        if (judgmentResultOfBall)
+        {
+            judgmentResultOfBall.gameObject.SetActive(true);
+            judgmentResultOfBall.text = message;
+
+            await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
+
+            judgmentResultOfBall.gameObject.SetActive(false);
+        }
         callBack?.Invoke();
     }
 

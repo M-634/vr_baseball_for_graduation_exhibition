@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class Zone : MonoBehaviour, IBallHitObjet
 {
-    [SerializeField] ZoneType zone;
+    //[SerializeField] ZoneType zone;
 
     private void Awake()
     {
@@ -20,21 +20,21 @@ public class Zone : MonoBehaviour, IBallHitObjet
 
     public void OnHit(Rigidbody rb, RaycastHit hitObjectInfo, float ballSpeed)
     {
-        switch (zone)
-        {
-            case ZoneType.FoulZone:
-                GameFlowManager.Instance.Foul = true;
-                break;
-            case ZoneType.OutZone:
-                GameFlowManager.Instance.Out = true;
-                break;
-            case ZoneType.CatcherZone:
-                GameFlowManager.Instance.Strike = true;
-                break;
-            case ZoneType.HomeRunZone:
-                GameFlowManager.Instance.UpdateHitType(HitType.HomeRun);
-                break;
-        }
-        rb.gameObject.SetActive(false);
+        //switch (zone)
+        //{
+        //    case ZoneType.FoulZone:
+        //        GameFlowManager.Instance.Foul = true;
+        //        break;
+        //    case ZoneType.OutZone:
+        //        GameFlowManager.Instance.Out = true;
+        //        break;
+        //    case ZoneType.CatcherZone:
+        //        GameFlowManager.Instance.Strike = true;
+        //        break;
+        //    case ZoneType.HomeRunZone:      
+        //        GameFlowManager.Instance.UpdateHitType(HitZoneType.HomeRun);
+        //        break;
+        //}
+        //rb.gameObject.SetActive(false);
     }
 }
