@@ -16,8 +16,6 @@ public class Stage
     public BallType[] ballTypes;
     /// <summary>ピッチャーが投げてくる球数</summary>
     public int ballNumber;
-    /// <summary>ピッチャーが投げてくる残りの球数</summary>
-    public int ballLeftNumber;
     /// <summary>ステージクリアに必要な打点数</summary>
     public int clearHitNumer;
 }

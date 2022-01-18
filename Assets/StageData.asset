@@ -24,7 +24,9 @@ MonoBehaviour:
     ballNumber: 20
     clearHitNumer: 2
   - stageNumber: 2
-    specialStage: 0
+    specialStage: 1
     ballTypes: 
     ballNumber: 30
     clearHitNumer: 3
+  currentStageNumber: 2
+  currentBallLeftNumer: 24

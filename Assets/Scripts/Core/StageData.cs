@@ -6,9 +6,7 @@ public class StageData : ScriptableObject
     [SerializeField] Stage[] stages;
 
     public int currentStageNumber = 0;
-
-    /// <summary>1ステージに何打点入ったか記録する変数</summary>
-    public int currentGetScoreNumber;
+    public int currentBallLeftNumer = 0;
 
     public Stage CurrentStageData => stages[currentStageNumber];
 
@@ -16,12 +14,8 @@ public class StageData : ScriptableObject
 
     public void Init()
     {
-        foreach (var s in stages)
-        {
-            s.ballLeftNumber = s.ballNumber;
-        }
+        currentBallLeftNumer = stages[0].ballNumber;
         currentStageNumber = 0;
-        currentGetScoreNumber = 0;
     }
 }
 
