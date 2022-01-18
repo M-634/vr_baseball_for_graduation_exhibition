@@ -16,6 +16,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 
     [Header("実行後にチェックを入れるとPlayBall。一度チェック入れたらいじらないこと")]
     public bool isDebug = false;
+
+
     private bool init = true;
 
 
@@ -42,12 +44,13 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
     public event Action OnThrowBall = default;
     /// <summary>判定処理が終わった時にUIにメッセージを飛ばすイベント</summary>
-    public event Action<JudgeType> OnSendProcessMessage = default;
+    public event Action<string, UnityAction> OnSendProcessMessage = default;
 
-    private JudgeType m_lastjudgeType;
+    private HitType m_lastHitType;
 
-    bool isFoul = false;//ファール判定が出たら更新しないためのフラグ
-
+    public bool Out { get; set; }
+    public bool Strike { get; set; }
+    public bool Foul { get; set; }
 
     private void Start()
     {
@@ -68,10 +71,11 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// </summary>
     public void PlayBall()
     {
-        //判定周りのフラグを初期化.
-        isFoul = false;
-        m_lastjudgeType = JudgeType.None;
-
+        //判定を初期する.
+        m_lastHitType = HitType.None;
+        Out = false;
+        Strike = false;
+        Foul = false;
 
         if (stageData.currentBallLeftNumer > 0)
         {
@@ -87,23 +91,12 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     }
 
     /// <summary>
-    /// 打球の判定を更新するメンバー関数.
+    /// ヒット判定を更新する関数.
     /// </summary>
-    /// <param name="judgeType"></param>
-    public void UpdateJudgeType(JudgeType judgeType)
+    /// <param name="hitType"></param>
+    public void UpdateHitType(HitType hitType)
     {
-        if (isFoul) return;
-
-        if (judgeType == JudgeType.Foul)
-        {
-            m_lastjudgeType = judgeType;
-            isFoul = true;
-        }
-        else
-        {
-            m_lastjudgeType = judgeType;
-        }
-        Debug.Log(m_lastjudgeType.ToString());
+        m_lastHitType = hitType;
     }
 
     /// <summary>
@@ -111,86 +104,64 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// </summary>
     public async void EndMoveBall()
     {
+        //判定結果を出すまで、遅延させる.
         await UniTask.Delay(TimeSpan.FromSeconds(1f), ignoreTimeScale: false);
+
+        //各ステージの残りの球数を更新する.
         stageData.currentBallLeftNumer--;
-        if (m_lastjudgeType == JudgeType.None)
+
+        if (m_lastHitType == HitType.None)
         {
-            Debug.LogWarning("判定結果なし");
-            PlayBall();
+            //ストライク
+            if (Strike)
+            {
+                OnSendProcessMessage.Invoke("Strike", PlayBall);
+            }
+            //アウト
+            else if (Out)
+            {
+                OnSendProcessMessage.Invoke("Out", PlayBall);
+            }
+            //ファール
+            else if (Foul)
+            {
+                OnSendProcessMessage.Invoke("Foul", PlayBall);
+            }
         }
+        //ホームランなら特別なイベントを発生させて、ランナーを走らせる
+        else if (m_lastHitType == HitType.HomeRun)
+        {
+            OnSendProcessMessage.Invoke("HomeRun", () => MoveRunner(4));
+        }
+        //ヒットしたら、ランナーを走らせる
         else
         {
-            Process();
+            OnSendProcessMessage.Invoke(m_lastHitType.ToString(), () => MoveRunner((int)m_lastHitType));
         }
     }
 
-    /// <summary>
-    ///　ピッチャーが投げた後の球の行方に応じて、処理するメンバー関数.
-    /// </summary>
-    /// <param name="judgeType"></param>
-    private void Process()
-    {
-        //uiに判定結果を表示する.
-        OnSendProcessMessage?.Invoke(m_lastjudgeType);
-
-        //ヒットした
-        if (m_lastjudgeType == JudgeType.Hit || m_lastjudgeType == JudgeType.TwoBase
-            || m_lastjudgeType == JudgeType.ThreeBase || m_lastjudgeType == JudgeType.HomeRun)
-        {
-            //ランナーを走らせる
-            ProcessRunner(m_lastjudgeType);
-        }
-        else
-        {
-            //次の球を投げる.
-            PlayBall();
-        }
-    }
-
-    /// <summary>
-    /// ヒット数に応じてランナーを走らせる
-    /// </summary>
-    /// <param name="type"></param>
-    private void ProcessRunner(JudgeType type)
-    {
-        switch (type)
-        {
-            case JudgeType.Hit:
-                MoveRunner(1);
-                break;
-            case JudgeType.TwoBase:
-                MoveRunner(2);
-                break;
-            case JudgeType.ThreeBase:
-                MoveRunner(3);
-                break;
-            case JudgeType.HomeRun:
-                MoveRunner(4);
-                break;
-        }
-    }
 
     /// <summary>
     /// ランナーを動かす命令を発行する関数.
     /// </summary>
-    /// <param name="hitNumber">ヒット=1、ツーベースヒット=2、スリーベースヒット=3、ホームラン=4</param>
-    public void MoveRunner(int hitNumber)
+    /// <param name="hitCount">ヒット=1、ツーベースヒット=2、スリーベースヒット=3、ホームラン=4</param>
+    public void MoveRunner(int hitCount)
     {
         //現在出塁しているランナーを先ずは走らせる.
         if (m_currentRunner.Count > 0)
         {
             foreach (Runner runner in m_currentRunner)
             {
-                Moving(hitNumber, runner).Forget();
+                Moving(hitCount, runner).Forget();
             }
         }
 
         //新しく出塁するランナーをインスタンスする.
-        Runner newRunner = Instantiate(m_runnerSourcePrefab,transform);
+        Runner newRunner = Instantiate(m_runnerSourcePrefab, transform);
         newRunner.transform.SetPositionAndRotation(m_basePostions[0].position, Quaternion.identity);
 
         //ランナーを走らせる
-        Moving(hitNumber, newRunner, true).Forget();
+        Moving(hitCount, newRunner, true).Forget();
 
         //出塁ランナーリストへ追加する.
         m_currentRunner.Add(newRunner);
@@ -285,11 +256,4 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 
     }
 
-}
-/// <summary>
-/// ピッチャーが投げた後の判定
-/// </summary>
-public enum JudgeType
-{
-    None, Strike, Ball, Hit, TwoBase, ThreeBase, HomeRun, Foul, Out, Catcher, Pitcher, OffThePremises
 }

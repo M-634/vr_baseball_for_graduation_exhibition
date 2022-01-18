@@ -1,38 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
 /// <summary>
-/// ピッチャーが投げた後、ボールが当たったコライダーによって判定を行うクラス.
+/// ヒット判定を行うクラス.
+/// *ここで言うヒットは、ランナーが出塁することである.
 /// </summary>
-[RequireComponent(typeof(BoxCollider))]
 public class HitCheck : MonoBehaviour,IBallHitObjet
 {
     /// <summary>何の判定を行うオブジェクトなのか予め決めておく</summary>
-    [SerializeField] JudgeType judgeType;
-    private bool isHit = false;
+    [SerializeField] HitType hitType;
+    /// <summary>ボールに一度当たったら、判定を消すフラグ</summary>
+    private bool hasChecked = false;
 
     private void Start()
     {
-        GetComponent<BoxCollider>().isTrigger = true;
         GetComponent<MeshRenderer>().enabled = false;
 
-        GameFlowManager.Instance.OnThrowBall += () => isHit = false;
+        GameFlowManager.Instance.OnThrowBall += () => hasChecked = false;
     }
 
     public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
     {
-        if (isHit) return;
-
-        //ホームランか、場外（ファール判定）
-       if(judgeType == JudgeType.HomeRun || judgeType == JudgeType.OffThePremises 
-            || judgeType == JudgeType.Catcher || judgeType == JudgeType.Pitcher)
-        {
-            rb.gameObject.SetActive(false);
-        }
-        GameFlowManager.Instance.UpdateJudgeType(judgeType);
-        isHit = true;
+        if (hasChecked) return;
+        GameFlowManager.Instance.UpdateHitType(hitType);
+        hasChecked = true;
     }
 }
 

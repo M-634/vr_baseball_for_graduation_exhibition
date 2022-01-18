@@ -71,4 +71,16 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
 }
 #endregion
 
+#region enum
+public enum ZoneType
+{
+   FoulZone, OutZone, CatcherZone, HomeRunZone
+}
+
+public enum HitType
+{
+   None = 0, Hit = 1,TwoBaseHit = 2,ThreeBaseHit = 3,HomeRun = 4,Foul = 5
+}
+#endregion
+
 

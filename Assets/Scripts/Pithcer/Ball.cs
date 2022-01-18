@@ -306,6 +306,7 @@ public class Ball : MonoBehaviour
 
     private void OnEnable()
     {
+        m_catcherPos.transform.position = m_initCatcherPos;
         transform.position = m_throwPos.transform.position;
         m_isCurve = false;
         StartCoroutine(BallMove());
@@ -317,8 +318,7 @@ public class Ball : MonoBehaviour
     }
 
     private void OnDisable()
-    {
-        m_catcherPos.transform.position = m_initCatcherPos;
+    { 
         m_ballTrail.Clear();
         if (GameFlowManager.Instance != null)
         {

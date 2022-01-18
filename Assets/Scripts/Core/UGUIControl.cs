@@ -23,22 +23,17 @@ public class UGUIControl : MonoBehaviour
         GameFlowManager.Instance.OnSendProcessMessage += DisplayMessage;
     }
 
-    private async void DisplayMessage(JudgeType judgeType)
+    private async void DisplayMessage(string message,UnityAction callBack = null)
     {
-        if (judgeType == JudgeType.None)
-        {
-            Debug.Log("‰½‚à•\Ž¦‚µ‚È‚¢");
-            return;
-        }
-
         if (displayJudgeText)
         {
             displayJudgeText.gameObject.SetActive(true);
-            displayJudgeText.text = judgeType.ToString();
+            displayJudgeText.text = message;
         }
-
         await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
         displayJudgeText.gameObject.SetActive(false);
+
+        callBack?.Invoke();
     }
 
 
