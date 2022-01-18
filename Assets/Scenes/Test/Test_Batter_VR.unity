@@ -548,7 +548,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 210739815}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 22.01}
+  m_LocalPosition: {x: 0, y: -5, z: 22.01}
   m_LocalScale: {x: 10, y: 5, z: 3}
   m_Children:
   - {fileID: 79633923}
@@ -629,7 +629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  judgeType: 9
+  hitType: 0
 --- !u!1 &237693471
 GameObject:
   m_ObjectHideFlags: 0
@@ -5080,7 +5080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d37ec562e26dd4ab18788d9f733bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  judgeType: 3
+  hitType: 0
 --- !u!65 &1797005743
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6255,7 +6255,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7477363570327444700}
-  m_Mesh: {fileID: 1822353411865580784, guid: 3d6b75ec00756a24f8c595afec1dc814, type: 3}
+  m_Mesh: {fileID: 1822353411865580784, guid: 5bce6c2d2db51c046aaadb4751fa2ee8, type: 3}
 --- !u!4 &372035311578951113
 Transform:
   m_ObjectHideFlags: 0
@@ -6358,7 +6358,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7480005948061050661}
-  m_Mesh: {fileID: 5248717185656344581, guid: 3d6b75ec00756a24f8c595afec1dc814, type: 3}
+  m_Mesh: {fileID: 5248717185656344581, guid: 5bce6c2d2db51c046aaadb4751fa2ee8, type: 3}
 --- !u!1 &919132148827845517
 GameObject:
   m_ObjectHideFlags: 0
@@ -6881,7 +6881,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8553296992526114505}
-  m_Mesh: {fileID: 2849310862324141758, guid: 3d6b75ec00756a24f8c595afec1dc814, type: 3}
+  m_Mesh: {fileID: 2849310862324141758, guid: 5bce6c2d2db51c046aaadb4751fa2ee8, type: 3}
 --- !u!1 &7477363570327444700
 GameObject:
   m_ObjectHideFlags: 0
@@ -6893,7 +6893,6 @@ GameObject:
   - component: {fileID: 4642176147811950497}
   - component: {fileID: 108568341491416915}
   - component: {fileID: 5990354807833932802}
-  - component: {fileID: 7477363570327444702}
   - component: {fileID: 7477363570327444701}
   m_Layer: 0
   m_Name: HitZone_OBJ1
@@ -6901,7 +6900,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &7477363570327444701
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6916,19 +6915,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1822353411865580784, guid: 3d6b75ec00756a24f8c595afec1dc814, type: 3}
---- !u!114 &7477363570327444702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7477363570327444700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0005d98894e57054ea32580eba85f259, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doHitCheack: 1
 --- !u!1 &7480005948061050661
 GameObject:
   m_ObjectHideFlags: 0
@@ -6940,15 +6926,15 @@ GameObject:
   - component: {fileID: 4907029833889552663}
   - component: {fileID: 784346352273394981}
   - component: {fileID: 6291070369396524584}
-  - component: {fileID: 7480005948061050663}
   - component: {fileID: 7480005948061050662}
+  - component: {fileID: 7480005948061050663}
   m_Layer: 0
   m_Name: FoulZone_OBJ4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &7480005948061050662
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6972,10 +6958,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7480005948061050661}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0005d98894e57054ea32580eba85f259, type: 3}
+  m_Script: {fileID: 11500000, guid: 363cf3db74c465c41bdd6b21e6f5e8cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doHitCheack: 1
+  zone: 0
 --- !u!1 &8553296992526114505
 GameObject:
   m_ObjectHideFlags: 0
@@ -6987,7 +6973,6 @@ GameObject:
   - component: {fileID: 2322018086090222558}
   - component: {fileID: 6682379498102907751}
   - component: {fileID: 4740356257697810986}
-  - component: {fileID: 8553296992526114507}
   - component: {fileID: 8553296992526114506}
   m_Layer: 0
   m_Name: HomeRunZone_GRP2
@@ -6995,7 +6980,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &8553296992526114506
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7010,16 +6995,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2849310862324141758, guid: 3d6b75ec00756a24f8c595afec1dc814, type: 3}
---- !u!114 &8553296992526114507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8553296992526114505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0005d98894e57054ea32580eba85f259, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doHitCheack: 1
