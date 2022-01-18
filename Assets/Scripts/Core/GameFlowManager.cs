@@ -11,7 +11,31 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 {
+    [Header("ステージデータ")]
     [SerializeField] StageData stageData = default;
+
+    [Header("実行後にチェックを入れるとPlayBall。一度チェック入れたらいじらないこと")]
+    public bool isDebug = false;
+    private bool init = true;
+
+
+    [Header("ランナーの設定")]
+    /// <summary> ランナープレハブ </summary>
+    [SerializeField] Runner m_runnerSourcePrefab = default;
+    /// <summary>0 : homebase, 1,2,3 : 各数字に対応したベース</summary>
+    [SerializeField] Transform[] m_basePostions;
+    /// <summary>ランナーの速度</summary>
+    [SerializeField] float m_moveDuration = 1f;
+
+    /// <summary>現在出塁しているランナーのリスト</summary>
+    private List<Runner> m_currentRunner = new List<Runner>();
+
+    public Transform GetHomeBase => m_basePostions[0];
+
+    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
+    int m_countRunnerReturnHomeBase = 0;
+
+
 
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
@@ -24,9 +48,6 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 
     bool isFoul = false;//ファール判定が出たら更新しないためのフラグ
 
-    [Header("実行後にチェックを入れるとPlayBall。一度チェック入れたらいじらないこと")]
-    public bool isDebug = false;
-    private bool init = true;
 
     private void Start()
     {
@@ -126,22 +147,10 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         }
     }
 
-    /// <summary> ランナープレハブ </summary>
-    [SerializeField] GameObject m_runnerSourcePrefab = default;
-    /// <summary>0 : homebase, 1,2,3 : 各数字に対応したベース</summary>
-    [SerializeField] Transform[] m_basePostions;
-    /// <summary>ランナーの速度</summary>
-    [SerializeField] float m_moveDuration = 1f;
-
-    /// <summary>現在出塁しているランナーのリスト</summary>
-    private List<Runner> m_currentRunner = new List<Runner>();
-
-    public Transform GetHomeBase => m_basePostions[0];
-
-    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
-    int m_countRunnerReturnHomeBase = 0;
-
-
+    /// <summary>
+    /// ヒット数に応じてランナーを走らせる
+    /// </summary>
+    /// <param name="type"></param>
     private void ProcessRunner(JudgeType type)
     {
         switch (type)
@@ -176,8 +185,11 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             }
         }
 
-        //新しく出塁するランナーをインスタンス化させて、ヒット数だけ走らせる.
-        Runner newRunner = Instantiate(m_runnerSourcePrefab, m_basePostions[0].position, Quaternion.identity).AddComponent<Runner>();
+        //新しく出塁するランナーをインスタンスする.
+        Runner newRunner = Instantiate(m_runnerSourcePrefab,transform);
+        newRunner.transform.SetPositionAndRotation(m_basePostions[0].position, Quaternion.identity);
+
+        //ランナーを走らせる
         Moving(hitNumber, newRunner, true).Forget();
 
         //出塁ランナーリストへ追加する.

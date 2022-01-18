@@ -25,7 +25,7 @@ public class Runner : MonoBehaviour
                 //ランナーの位置情報を更新
                 transform.position = nextBase.position;
                 //ホームベースへ向かせる
-                transform.LookAt(RunnerManager.Instance.GetHomeBase, transform.up);
+                transform.LookAt(GameFlowManager.Instance.GetHomeBase, transform.up);
                 //コールバック
                 callBack?.Invoke();
            });
