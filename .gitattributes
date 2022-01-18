@@ -1,4 +1,1 @@
-*.otf filter=lfs diff=lfs merge=lfs -text
 Assets/Graphics/Fonts/NotoSansJP-Medium_SDF.asset filter=lfs diff=lfs merge=lfs -text
-*.anim filter=lfs diff=lfs merge=lfs -text
-*.fbx filter=lfs diff=lfs merge=lfs -text
