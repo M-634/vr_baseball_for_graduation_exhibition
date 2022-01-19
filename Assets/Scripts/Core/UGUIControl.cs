@@ -22,12 +22,12 @@ public class UGUIControl : MonoBehaviour
         judgmentResultOfBall.gameObject.SetActive(false);
     }
 
+
     /// <summary>
     /// ピッチャーがボールを投げた後の球の判定を表示する関数.
     /// </summary>
     /// <param name="message"></param>
     /// <param name="callBack"></param>
-
     public async void DisplayHitZoneMessage(string message,UnityAction callBack = null)
     {
         if (judgmentResultOfBall)
@@ -42,7 +42,10 @@ public class UGUIControl : MonoBehaviour
         callBack?.Invoke();
     }
 
-
+    /// <summary>
+    /// バッターのスイングスピードを表示する関数.
+    /// </summary>
+    /// <param name="velo"></param>
     public void DisplayHeadSpeed(float velo)
     {
         if (velo < 70f) return;
