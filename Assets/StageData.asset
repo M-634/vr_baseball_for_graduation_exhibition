@@ -15,12 +15,12 @@ MonoBehaviour:
   stages:
   - stageNumber: 0
     specialStage: 0
-    ballTypes: 
+    ballTypes: 00000000
     ballNumber: 10
     clearHitNumer: 1
   - stageNumber: 1
     specialStage: 0
-    ballTypes: 
+    ballTypes: 00000000
     ballNumber: 20
     clearHitNumer: 2
   - stageNumber: 2
@@ -29,4 +29,4 @@ MonoBehaviour:
     ballNumber: 30
     clearHitNumer: 3
   currentStageNumber: 2
-  currentBallLeftNumer: 24
+  currentBallLeftNumer: 28

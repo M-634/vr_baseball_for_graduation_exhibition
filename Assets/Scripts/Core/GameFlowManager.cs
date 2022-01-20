@@ -14,11 +14,6 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     [Header("ステージデータ")]
     [SerializeField] StageData stageData = default;
 
-    [Header("実行後にチェックを入れるとPlayBall。一度チェック入れたらいじらないこと")]
-    public bool isDebug = false;
-
-
-
     [Header("ランナーの設定")]
     /// <summary> ランナープレハブ </summary>
     [SerializeField] Runner m_runnerSourcePrefab = default;
@@ -39,8 +34,6 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
     int m_countRunnerReturnHomeBase = 0;
 
-    private bool init = true;
-
     private HitZoneType m_lastHitZoneType;
 
     /// <summary>現在出塁しているランナーのリスト</summary>
@@ -51,15 +44,6 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     private void Start()
     {
         stageData.Init();
-    }
-
-    private void Update()
-    {
-        if (isDebug && init)
-        {
-            PlayBall();
-            init = false;
-        }
     }
 
     /// <summary>
@@ -80,7 +64,6 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             Debug.Log("GAME OVER...");
             stageData.Init();
         }
-
     }
 
     /// <summary>
@@ -127,17 +110,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <param name="callBack"></param>
     private void DisplayHitZoneMessage(string text,UnityAction callBack)
     {
-        //UIが設定されていたら、メッセージを送る.
-        if(OnDisplayHitZoneMessage != null)
-        {
-            OnDisplayHitZoneMessage.Invoke(text, callBack);
-        }
-        //設定されていないなら、コールバックだけ呼び出す,
-        else 
-        {
-            Debug.Log(text);
-            callBack.Invoke();
-        }
+        OnDisplayHitZoneMessage?.Invoke(text, callBack);
+        Debug.Log(text);
     }
 
 
