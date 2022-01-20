@@ -1,21 +1,26 @@
 ﻿using UnityEngine;
+using System;
 
 [CreateAssetMenu(fileName = "StageData",menuName ="CreateStageDataBase")]
 public class StageData : ScriptableObject 
 {
     [SerializeField] Stage[] stages;
+    public Stage[] GetStageArray => stages;
+}
 
-    public int currentStageNumber = 0;
-    public int currentBallLeftNumer = 0;
-
-    public Stage CurrentStageData => stages[currentStageNumber];
-
-    public bool IsStageClera => currentStageNumber >= stages[currentStageNumber].clearHitNumer;
-
-    public void Init()
-    {
-        currentBallLeftNumer = stages[0].ballNumber;
-        currentStageNumber = 0;
-    }
+/// <summary>
+/// ステージクラス.
+/// </summary>
+[Serializable]
+public class Stage
+{
+    /// <summary>ステージナンバー</summary>
+    public int stageNumber;
+    /// <summary>ピッチャーが投げてくる球種</summary>
+    public BallType[] ballTypes;
+    /// <summary>ピッチャーが投げてくる球数</summary>
+    public int capacityOfBall;
+    /// <summary>ステージクリアに必要な打点数</summary>
+    public int clearScore;
 }
 

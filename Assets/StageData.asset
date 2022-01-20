@@ -14,19 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stages:
   - stageNumber: 0
-    specialStage: 0
     ballTypes: 00000000
-    ballNumber: 10
-    clearHitNumer: 1
+    capacityOfBall: 10
+    clearScore: 5
   - stageNumber: 1
-    specialStage: 0
-    ballTypes: 00000000
-    ballNumber: 20
-    clearHitNumer: 2
+    ballTypes: 01000000
+    capacityOfBall: 20
+    clearScore: 2
   - stageNumber: 2
-    specialStage: 1
-    ballTypes: 
-    ballNumber: 30
-    clearHitNumer: 3
-  currentStageNumber: 2
-  currentBallLeftNumer: 28
+    ballTypes: 0a000000
+    capacityOfBall: 30
+    clearScore: 3

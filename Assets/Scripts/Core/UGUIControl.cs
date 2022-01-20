@@ -15,7 +15,19 @@ public class UGUIControl : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_judgmentResultOfBall = default;
 
     /// <summary>スタートボタン</summary>
-    [SerializeField] Button m_startButton;
+    [SerializeField] Button m_startButton = default;
+
+    [Header("StageSatus")]
+    /// <summary>ゲーム中の各ステージのステータスをUIに表示するオブジェット</summary>
+    [SerializeField] GameObject m_stageStatusUI;
+    /// <summary>ステージ番号を表示するテキスト</summary>
+    [SerializeField] TextMeshProUGUI m_stageNumberText;
+    /// <summary>各ステージの目標打点を表示するテキスト</summary>
+    [SerializeField] TextMeshProUGUI m_targetScoreText;
+    /// <summary>各ステージでプレイヤーが獲得した点を表示するテキスト</summary>
+    [SerializeField] TextMeshProUGUI m_getScoreText;
+    /// <summary>各ステージのピッチャーの球数の残りを表示するテキスト</summary>
+    [SerializeField] TextMeshProUGUI m_leftBallText;
 
     [Header("デバック用テキスト")]
     [SerializeField] TextMeshProUGUI m_displayHeadSpeedOfBatText = default;
@@ -24,21 +36,45 @@ public class UGUIControl : MonoBehaviour
     void Start()
     {
         m_judgmentResultOfBall?.gameObject.SetActive(false);
+        m_stageStatusUI?.gameObject.SetActive(false);
 
         m_startButton.onClick.AddListener(() =>
             {
                 StartGame();
                 m_startButton.gameObject.SetActive(false);
             });
+
+        GameFlowManager.Instance.OnCurrentStageChanged.Subscribe((stage) =>
+        {
+            if (GameFlowManager.Instance.IsLastStage)
+            {
+               m_stageNumberText.text = $"FinalStage";
+            }
+            else
+            {
+                m_stageNumberText.text = $"Stage: {stage.stageNumber + 1}";
+            }
+            m_targetScoreText.text = $"目標: {stage.clearScore}";
+        });
+        GameFlowManager.Instance.OnGetScoreChanged.Subscribe((score) =>
+        {
+            m_getScoreText.text = $"得点: {score}";
+        });
+        GameFlowManager.Instance.OnLeftBallCountChanged.Subscribe((leftBallCount) =>
+        {
+            m_leftBallText.text = $"残り: {leftBallCount}";
+        });
     }
-   
+
     /// <summary>
     /// スタートボタンを押したらゲーム開始する関数.
     /// </summary>
     public void StartGame()
     {
+        //ステージ情報UIを表示する
+        m_stageStatusUI?.gameObject.SetActive(true);
         //ステージ１開始！
-        GameFlowManager.Instance.PlayBall();
+        GameFlowManager.Instance.PlayBall(true, true);
     }
 
     /// <summary>
@@ -52,11 +88,12 @@ public class UGUIControl : MonoBehaviour
     }
 
     /// <summary>
-    /// ピッチャーがボールを投げた後の球の判定を表示する関数.
+    /// WorldSpace上のUIにメッセージを表示する関数.
+    /// ex：ヒット判定、ゲームオーバー、ゲームクリアetc...
     /// </summary>
     /// <param name="message"></param>
     /// <param name="callBack"></param>
-    public async void DisplayHitZoneMessage(string message,UnityAction callBack = null)
+    public async void DisplayMessage(string message, UnityAction callBack = null)
     {
         if (m_judgmentResultOfBall)
         {

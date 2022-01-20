@@ -5,15 +5,49 @@ using UnityEngine.Events;
 using System;
 using Cysharp.Threading.Tasks;
 
-
 /// <summary>
 /// 野球のルールに従って,ゲームを進行を管理するクラス
 /// </summary>
 public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 {
+    #region stage
     [Header("ステージデータ")]
-    [SerializeField] StageData stageData = default;
+    [SerializeField] StageData m_stageData = default;
 
+    private int m_leftBallCount;
+    private Subject<int> m_leftBallCountSubject = new Subject<int>();
+    public IObservable<int> OnLeftBallCountChanged => m_leftBallCountSubject;
+
+    private Stage m_currentStage = null;
+    private Subject<Stage> m_currentStageSubject = new Subject<Stage>();
+    public IObservable<Stage> OnCurrentStageChanged => m_currentStageSubject;
+    public int LeftBallCount
+    {
+        get => m_leftBallCount;
+        private set
+        {
+            m_leftBallCount = value;
+            m_leftBallCountSubject.OnNext(m_leftBallCount);
+        }
+    }
+
+    public Stage GetCurrentStage
+    {
+        get => m_currentStage;
+        private set
+        {
+            //ステージ変更時,ステージ情報を表示するUIの値を初期化する
+            m_currentStage = value;
+            GetScore = 0;
+            LeftBallCount = m_currentStage.capacityOfBall;
+            m_currentStageSubject.OnNext(m_currentStage);
+        }
+    }
+
+    public bool IsLastStage => GetCurrentStage.stageNumber == m_stageData.GetStageArray.Length - 1;
+    #endregion
+
+    #region runner
     [Header("ランナーの設定")]
     /// <summary> ランナープレハブ </summary>
     [SerializeField] Runner m_runnerSourcePrefab = default;
@@ -22,48 +56,95 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>ランナーの速度</summary>
     [SerializeField] float m_moveDuration = 1f;
 
+    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
+    int m_getScore = 0;
+
+    Subject<int> m_getScoreSubject = new Subject<int>();
+    public IObservable<int> OnGetScoreChanged => m_getScoreSubject;
+
+    public int GetScore
+    {
+        get => m_getScore;
+        set
+        {
+            m_getScore = value;
+            m_getScoreSubject.OnNext(m_getScore);
+        }
+    }
+
+    /// <summary>現在出塁しているランナーのリスト</summary>
+    private List<Runner> m_currentRunner = new List<Runner>();
+    public Transform GetHomeBase => m_basePostions[0];
+    #endregion
+
     [Space(10)]
-    /// <summary>判定処理が終わった時にUIにメッセージを飛ばすイベント</summary>
-    [SerializeField] UnityEventWrapperSendText OnDisplayHitZoneMessage = default;
+    /// <summary>判定処理が終わった時にWorldSpace上のUIにメッセージを飛ばすイベント</summary>
+    [SerializeField] UnityEventWrapperSendText OnDisplayMessage = default;
 
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
     /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
     public event Action OnThrowBall = default;
-  
-    /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
-    int m_countRunnerReturnHomeBase = 0;
 
     private HitZoneType m_lastHitZoneType;
 
-    /// <summary>現在出塁しているランナーのリスト</summary>
-    private List<Runner> m_currentRunner = new List<Runner>();
-
-    public Transform GetHomeBase => m_basePostions[0];
-
-    private void Start()
+    /// <summary>
+    /// 初期化する関数
+    /// </summary>
+    private void Initialize()
     {
-        stageData.Init();
+        GetCurrentStage = m_stageData.GetStageArray[0];
+        ResetRunner();
     }
 
     /// <summary>
-    /// ピッチャーが球を投げるのを開始するメンバー関数.
+    /// ステージクリア時に呼ばれる関数.
     /// </summary>
-    public void PlayBall()
+    private void ClearStage()
+    {
+        //最終ステージクリア
+        if (IsLastStage)
+        {
+            OnDisplayMessage?.Invoke("GameClear", () => { });
+            Debug.Log("GameClear...");
+        }
+        //次のステージへ
+        else
+        {
+            OnDisplayMessage?.Invoke("ClearStage", () =>
+            {
+                GetCurrentStage = m_stageData.GetStageArray[GetCurrentStage.stageNumber + 1];
+                PlayBall(false, true);
+            });
+        }
+    }
+
+    /// <summary>
+    /// ピッチャーが球を投げる関数.
+    /// </summary>
+    /// <param name="isFirstStage">初めのステージかどうか判定するフラグ</param>
+    /// <param name="isFirstBall">各ステージごとの初球かどうか判定するフラグ</param>
+    public void PlayBall(bool isFirstStage = false, bool isFirstBall = false)
     {
         //判定を初期する.
         m_lastHitZoneType = HitZoneType.None;
-      
-        if (stageData.currentBallLeftNumer > 0)
+
+        //初めのステージなら初期化する
+        if (isFirstStage) Initialize();
+
+        //初級以外は、残りの球数を減らす
+        if (!isFirstBall) LeftBallCount--;
+
+        //残りの球数がなくなったらゲームオーバー
+        if (LeftBallCount < 0)
         {
-            //ボールを投げる.
-            OnThrowBall?.Invoke();
+            OnDisplayMessage?.Invoke("GameOver", () => { });
+            Debug.Log("Game Over");
+            return;
         }
-        else
-        {
-            Debug.Log("GAME OVER...");
-            stageData.Init();
-        }
+
+        //ピッチャーが球を投げる
+        OnThrowBall?.Invoke();
     }
 
     /// <summary>
@@ -83,23 +164,20 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         //判定結果を出すまで、遅延させる.
         await UniTask.Delay(TimeSpan.FromSeconds(1f), ignoreTimeScale: false);
 
-        //各ステージの残りの球数を更新する.
-        stageData.currentBallLeftNumer--;
-
         if (m_lastHitZoneType == HitZoneType.None)
         {
-            DisplayHitZoneMessage("何処にも当たらなかった.", PlayBall);
+            DisplayMessage("何処にも当たらなかった.", () => PlayBall());
         }
-        else if(m_lastHitZoneType == HitZoneType.Foul || m_lastHitZoneType == HitZoneType.Out 
+        else if (m_lastHitZoneType == HitZoneType.Foul || m_lastHitZoneType == HitZoneType.Out
             || m_lastHitZoneType == HitZoneType.Catcher)
         {
             //UIにテキストを送って、プレイボール.
-            DisplayHitZoneMessage(m_lastHitZoneType.ToString(), PlayBall);
+            DisplayMessage(m_lastHitZoneType.ToString(), () => PlayBall());
         }
         else
         {
             //UIにテキストを送って、ランナーを走らせる.
-            DisplayHitZoneMessage(m_lastHitZoneType.ToString(), () => MoveRunner((int)m_lastHitZoneType));
+            DisplayMessage(m_lastHitZoneType.ToString(), () => MoveRunner((int)m_lastHitZoneType));
         }
     }
 
@@ -108,9 +186,9 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// </summary>
     /// <param name="text"></param>
     /// <param name="callBack"></param>
-    private void DisplayHitZoneMessage(string text,UnityAction callBack)
+    private void DisplayMessage(string text, UnityAction callBack)
     {
-        OnDisplayHitZoneMessage?.Invoke(text, callBack);
+        OnDisplayMessage?.Invoke(text, callBack);
         Debug.Log(text);
     }
 
@@ -146,9 +224,9 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// </summary>
     /// <param name="hitCount"></param>
     /// <param name="runner"></param>
-    private async UniTask Moving(int hitCount, Runner runner,bool lastRunner = false)
+    private async UniTask Moving(int hitCount, Runner runner, bool lastRunner = false)
     {
-   
+
         //ヒット数分、ランナーを移動させる.
         for (int i = 0; i < hitCount; i++)
         {
@@ -156,10 +234,10 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //ホームベースに着いたら、得点処理をしてランナーを削除
             if (nextBaseIndex == 4)
             {
-                m_countRunnerReturnHomeBase++;
                 runner.Move(m_basePostions[0], m_moveDuration, () =>
                  {
                      DeleteRunner(runner);
+                     GetScore++;
                  });
                 break;
             }
@@ -176,7 +254,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
             EndMove();
         }
-        
+
     }
 
     /// <summary>
@@ -185,23 +263,9 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     private void EndMove()
     {
         Debug.Log("runner　処理が終わった");
-        if (m_countRunnerReturnHomeBase >= stageData.CurrentStageData.clearHitNumer)
+        if (GetScore >= GetCurrentStage.clearScore)
         {
-            Debug.Log("stage clear");
-            ResetRunner();
-
-            if (stageData.CurrentStageData.specialStage)
-            {
-                Debug.Log("Game Clear");
-            }
-            else
-            {
-                //次のステージへ
-                stageData.currentStageNumber++;
-                stageData.currentBallLeftNumer = stageData.CurrentStageData.ballNumber;
-                m_countRunnerReturnHomeBase = 0;
-                PlayBall();
-            }
+            ClearStage();
         }
         else
         {
