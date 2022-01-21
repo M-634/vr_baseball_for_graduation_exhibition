@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine.Events;
 
 /// <summary>
-/// 出塁しているランナー.
+/// ランナーを制御するクラス
 /// </summary>
 public class Runner : MonoBehaviour
 {

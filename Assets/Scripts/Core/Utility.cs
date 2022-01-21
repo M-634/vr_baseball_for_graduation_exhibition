@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+//今回のプロジェクトで扱う便利な物をまとめたファイルです
+
 #region Interfaces
 /// <summary>
 /// ボールに当たったら何かしらの処理を呼ぶゲームオブジェクトに継承するインターファイス
@@ -30,6 +32,9 @@ public class UnityEventWrapperFloat: UnityEvent<float> { }
 
 [Serializable]
 public class UnityEventWrapperSendText : UnityEvent<string, UnityAction> { }
+
+[Serializable]
+public class UnityEventWrapperDisplayResult : UnityEvent<Result, UnityAction> { }
 #endregion
 
 #region siglton

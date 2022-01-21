@@ -29,6 +29,10 @@ public class UGUIControl : MonoBehaviour
     /// <summary>各ステージのピッチャーの球数の残りを表示するテキスト</summary>
     [SerializeField] TextMeshProUGUI m_leftBallText;
 
+    [Header("Result")]
+    [SerializeField] GameObject m_resultUI;
+    [SerializeField] TextMeshProUGUI m_resultText;
+
     [Header("デバック用テキスト")]
     [SerializeField] TextMeshProUGUI m_displayHeadSpeedOfBatText = default;
 
@@ -37,6 +41,7 @@ public class UGUIControl : MonoBehaviour
     {
         m_judgmentResultOfBall?.gameObject.SetActive(false);
         m_stageStatusUI?.gameObject.SetActive(false);
+        m_resultUI?.SetActive(false);
 
         m_startButton.onClick.AddListener(() =>
             {
@@ -104,6 +109,30 @@ public class UGUIControl : MonoBehaviour
 
             m_judgmentResultOfBall.gameObject.SetActive(false);
         }
+        callBack?.Invoke();
+    }
+
+    /// <summary>
+    /// WorldSpace上にステージクリア時のリザルトを表示する関数.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <param name="callBack"></param>
+    public async void DisplayResult(Result result, UnityAction callBack = null)
+    {
+        m_resultUI?.SetActive(true);
+
+        m_resultText.text = $"ヒット: {result.hitCount}本\n" +
+            $"ツーラン: {result.twoBaseCount}本\n" +
+            $"スリーラン: {result.threeBaseCount}本\n" +
+            $"ホームラン: {result.homeRunCount}本\n" +
+            $"ストライク: {result.strikeCount}数\n" +
+            $"最大距離: {result.maxDistance}m\n" +
+            $"合計距離: {result.sumDistance}m\n" +
+            $"報酬金額: {result.amountOfRemuneration}円\n" +
+            $"累計報酬金額: {result.accumulatedRemuneration}円\n";
+
+        await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
+        m_resultUI?.SetActive(false);
         callBack?.Invoke();
     }
 
