@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -31,6 +27,9 @@ public class UnityEventWrapperDefault : UnityEvent { }
 
 [Serializable]
 public class UnityEventWrapperFloat: UnityEvent<float> { }
+
+[Serializable]
+public class UnityEventWrapperSendText : UnityEvent<string, UnityAction> { }
 #endregion
 
 #region siglton
@@ -67,6 +66,48 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
         {
             Destroy(this.gameObject);
         }
+    }
+}
+#endregion
+
+#region enum
+public enum HitZoneType
+{
+   None = 0, Hit = 1,TwoBaseHit = 2,ThreeBaseHit = 3,HomeRun = 4,Foul = 5,Out = 6,Catcher = 7
+}
+#endregion
+
+#region Observer
+public interface IObservable<T>
+{
+    void Subscribe(Action<T> action);
+}
+
+public interface IObserver<T>
+{
+    void OnNext(T value);
+}
+
+/// <summary>
+/// UniRxのSubjectクラスを参考にしました。
+/// リアクティブプログラミングを実装する簡単なサンプルです。
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class Subject<T> : IObservable<T>, IObserver<T>
+{
+    List<Action<T>> m_observers = new List<Action<T>>();
+
+    public void OnNext(T value)
+    {
+        foreach (var observer in m_observers)
+        {
+            observer.Invoke(value);
+        }
+    }
+
+    public void Subscribe(Action<T> action)
+    {
+        m_observers.Add(action);
     }
 }
 #endregion
