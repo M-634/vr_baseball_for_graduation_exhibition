@@ -663,7 +663,7 @@ GameObject:
   - component: {fileID: 163510843}
   - component: {fileID: 163510842}
   m_Layer: 5
-  m_Name: StageNumberText
+  m_Name: ResultText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1248,6 +1248,14 @@ PrefabInstance:
       propertyPath: m_ball
       value: 
       objectReference: {fileID: 1034568854}
+    - target: {fileID: 1865274847714477627, guid: b20d77e202ada6e4b94ef4c8559bc251, type: 3}
+      propertyPath: m_type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1865274847714477627, guid: b20d77e202ada6e4b94ef4c8559bc251, type: 3}
+      propertyPath: m_debugBallType
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b20d77e202ada6e4b94ef4c8559bc251, type: 3}
 --- !u!1 &351609961
@@ -7327,6 +7335,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnDisplayResult:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2133114785}
+        m_TargetAssemblyTypeName: UGUIControl, Assembly-CSharp
+        m_MethodName: DisplayResult
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2133114785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7346,6 +7369,8 @@ MonoBehaviour:
   m_targetScoreText: {fileID: 757387222}
   m_getScoreText: {fileID: 850062216}
   m_leftBallText: {fileID: 612106311}
+  m_resultUI: {fileID: 1404203217}
+  m_resultText: {fileID: 23618720}
   m_displayHeadSpeedOfBatText: {fileID: 1441008567}
 --- !u!1 &2136260279
 GameObject:
@@ -7997,7 +8022,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_debugRotatePower: 0
-  m_isJustKeepHittingBallBack: 0
+  m_isJustKeepHittingBallBack: 1
 --- !u!4 &5683649213036649976
 Transform:
   m_ObjectHideFlags: 0

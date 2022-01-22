@@ -5,11 +5,14 @@ using UnityEngine.Events;
 using System;
 using Cysharp.Threading.Tasks;
 
+//このクラスの責務が多すぎる.暇がある時にリファクタリングしようと思います(優先度は低め)
+
 /// <summary>
 /// 野球のルールに従って,ゲームを進行を管理するクラス
 /// </summary>
 public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 {
+    #region field
     #region stage
     [Header("ステージデータ")]
     [SerializeField] StageData m_stageData = default;
@@ -30,7 +33,10 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         private set
         {
             m_leftBallCount = value;
-            m_leftBallCountSubject.OnNext(m_leftBallCount);
+            if (m_leftBallCount > -1)
+            {
+                m_leftBallCountSubject.OnNext(m_leftBallCount);
+            }
         }
     }
 
@@ -88,15 +94,14 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
     /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
-    public event Action OnThrowBall = default;
+    public event Action<BallType[]> OnThrowBall = default;
 
     private HitZoneType m_lastHitZoneType;
 
-#if UNITY_EDITOR
-    [SerializeField]
-#endif
-    private Result m_result = new Result();
+    private readonly Result m_result = new Result();
+    #endregion
 
+    #region method
     /// <summary>
     /// 初期化する関数
     /// </summary>
@@ -117,9 +122,9 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         {
             EndStage("GameClear", () =>
             {
-            //ランキング登録
+                //ランキング登録
 
-            //リスタート
+                //リスタート
             });
         }
         //ステージクリア
@@ -145,6 +150,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         //メッセージを飛ばす.
         OnDisplayMessage?.Invoke(message, () =>
         {
+            //ランナーを削除
+            ResetRunner();
             //リザルト表示.
             OnDisplayResult?.Invoke(m_result, () =>
             {
@@ -180,9 +187,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
              });
             return;
         }
-
         //ピッチャーが球を投げる
-        OnThrowBall?.Invoke();
+        OnThrowBall?.Invoke(GetCurrentStage.ballTypes);
     }
 
     /// <summary>
@@ -197,7 +203,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>
     /// 球が動かなくなったら呼ばれるメンバー関数.
     /// </summary>
-    public async void EndMoveBall()
+    /// <param name="endBallPos"></param>
+    public async void EndMoveBall(Vector3 endBallPos)
     {
         //判定結果を出すまで、遅延させる.
         await UniTask.Delay(TimeSpan.FromSeconds(1f), ignoreTimeScale: false);
@@ -217,6 +224,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //UIにテキストを送って、ランナーを走らせる.
             DisplayMessage(m_lastHitZoneType.ToString(), () => MoveRunner((int)m_lastHitZoneType));
         }
+        //リザルトを更新する
+        UpdateResult(m_lastHitZoneType, endBallPos);
     }
 
     /// <summary>
@@ -229,6 +238,53 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         OnDisplayMessage?.Invoke(text, callBack);
         Debug.Log(text);
     }
+
+    /// <summary>
+    /// リザルトを更新する関数
+    /// </summary>
+    private void UpdateResult(HitZoneType hitZoneType, Vector3 endBallPos)
+    {
+        //各種カウンターを更新する.
+        if (hitZoneType == HitZoneType.Hit)
+        {
+            m_result.hitCount++;
+        }
+        else if (hitZoneType == HitZoneType.TwoBaseHit)
+        {
+            m_result.twoBaseCount++;
+        }
+        else if (hitZoneType == HitZoneType.ThreeBaseHit)
+        {
+            m_result.threeBaseCount++;
+        }
+        else if (hitZoneType == HitZoneType.HomeRun)
+        {
+            m_result.homeRunCount++;
+        }
+        else if (hitZoneType == HitZoneType.Catcher)
+        {
+            m_result.strikeCount++;
+        }
+        //距離を更新する
+        CalcDistance(endBallPos);
+    }
+
+    /// <summary>
+    /// 最大飛距離と合計飛距離を計算する関数
+    /// </summary>
+    /// <param name="endBallPos"></param>
+    /// <returns></returns>
+    private void CalcDistance(Vector3 endBallPos)
+    {
+        float distance = Vector3.Distance(GetHomeBase.position, endBallPos);
+
+        if (distance > m_result.maxDistance)
+        {
+            m_result.maxDistance = distance;
+        }
+        m_result.sumDistance += distance;
+    }
+
 
 
     /// <summary>
@@ -334,5 +390,5 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         }
 
     }
-
+    #endregion
 }

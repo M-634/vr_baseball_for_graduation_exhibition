@@ -80,6 +80,33 @@ public enum HitZoneType
 {
    None = 0, Hit = 1,TwoBaseHit = 2,ThreeBaseHit = 3,HomeRun = 4,Foul = 5,Out = 6,Catcher = 7
 }
+
+public enum BallType
+{
+    Straight = 0,
+    Curve = 1,
+    Slider = 2,
+    Shoot = 3,
+    Fork = 4,
+    Sinker = 5,
+    ChangeUp = 6,
+    HighSpeedStraight = 7,
+    RizeBall = 8,
+    CutBall = 9,
+    WhiteBall = 10,
+    WanderWhiteBall = 11,
+    DragonflyBall = 12
+}
+
+
+/// <summary>
+/// 開発タイプ
+/// </summary>
+public enum DevelopType
+{
+    Debug,
+    Main
+}
 #endregion
 
 #region Observer

@@ -15,7 +15,7 @@ public class CheckHitZone : MonoBehaviour,IBallHitObjet
     {
         GetComponent<MeshRenderer>().enabled = false;
 
-        GameFlowManager.Instance.OnThrowBall += () => hasChecked = false;
+        GameFlowManager.Instance.OnThrowBall += (b) => hasChecked = false;
     }
 
     public void OnHit(Rigidbody rb, RaycastHit hit, float ballSpeed)
