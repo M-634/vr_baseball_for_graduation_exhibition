@@ -15,8 +15,8 @@ MonoBehaviour:
   stages:
   - stageNumber: 0
     ballTypes: 07000000
-    capacityOfBall: 10
-    clearScore: 1
+    capacityOfBall: 100
+    clearScore: 100
   - stageNumber: 1
     ballTypes: 07000000
     capacityOfBall: 20

@@ -15,6 +15,9 @@ public class BatControl : MonoBehaviour, IBallHitObjet
     /// <summary>バットのグリップ位置</summary>
     [SerializeField] Transform m_grip;
 
+    /// <summary>バットの打撃音源</summary>
+    [SerializeField] SFXPlayer m_sfxBattingPlayer;
+
     [Header("ここより下の変数は、要調整が必要なもの")]
     /// <summary>バットの反発係数の最低値</summary>
     [SerializeField, Range(0f, 0.5f)] float m_minValueOfRepulsionCoeffiecient;
@@ -26,6 +29,9 @@ public class BatControl : MonoBehaviour, IBallHitObjet
     [SerializeField] float m_debugRotatePower = -10;
     /// <summary>ボールが当たった法線方向へそのままの速度で飛ばす</summary>
     [SerializeField] bool m_isJustKeepHittingBallBack = false;
+
+    /// <summary>打球が当たった時のバットの芯との距離の比率</summary>
+    [SerializeField, Range(-3f,3f)] float hitCoreRatio; //音を実際に出してテストしながらいい感じの範囲を決める.
 
     /// <summary>バットに当たった瞬間にフラグを立てる</summary>
     private bool m_onImpact = false;
@@ -94,13 +100,21 @@ public class BatControl : MonoBehaviour, IBallHitObjet
 
     public void OnHit(Rigidbody rb, RaycastHit hitObjectInfo, float ballSpeed)
     {
+
         if (m_isJustKeepHittingBallBack)
         {
+            //反射するようにボールを飛ばす.
             rb.velocity = hitObjectInfo.normal * ballSpeed;
-            return;
         }
-        Debug.Log("結果 :" + BattingPower(hitObjectInfo, ballSpeed));
-        rb.velocity = hitObjectInfo.normal * BattingPower(hitObjectInfo, ballSpeed);
+        else
+        {
+            //自然な形で球を打ち返す.
+            Debug.Log("結果 :" + BattingPower(hitObjectInfo, ballSpeed));
+            rb.velocity = hitObjectInfo.normal * BattingPower(hitObjectInfo, ballSpeed);
+        }
+
+        //打撃音を鳴らす.バットの芯との距離に応じてpitchを変える.
+        m_sfxBattingPlayer.PlayFirstAudioClipSetPitch(hitCoreRatio);
     }
 
     private float BattingPower(RaycastHit hitObjectInfo, float ballSpeed)
@@ -109,10 +123,11 @@ public class BatControl : MonoBehaviour, IBallHitObjet
         float justMeetRatio = Vector3.Dot(m_barycenterVectorOnImpact, hitObjectInfo.normal);
         justMeetRatio = Mathf.Clamp(justMeetRatio, m_minValueOfRepulsionCoeffiecient, 1f);
 
-        //ボールが当たった場所からバットの重心までの距離を求め,距離に応じてパワーに補正値をかける.
-        float hitCoreRatio = Vector3.Distance(hitObjectInfo.point, m_barycenter.position) * 100;
-        //バットの芯に近い程1に近い値を返す、バットの芯からの距離が17cm超えると0を返す
-        hitCoreRatio = Mathf.Clamp01(1 - hitCoreRatio / 17);
+        //ここの計算は見直しが必要、ほぼ0しか返していない. 1/28
+        ////ボールが当たった場所からバットの重心までの距離を求め,距離に応じてパワーに補正値をかける.
+        // hitCoreRatio = Vector3.Distance(hitObjectInfo.point, m_barycenter.position) * 100;
+        ////バットの芯に近い程1に近い値を返す、バットの芯からの距離が17cm超えると0を返す
+        //hitCoreRatio = Mathf.Clamp01(1 - hitCoreRatio / 17);
 
         //最終的なボールに加える力を計算結果を返す（随時修正する)
         return ballSpeed * ((justMeetRatio + hitCoreRatio) / 2) * GameFlowManager.CoefficientOfRestitution + m_headSpeed;
