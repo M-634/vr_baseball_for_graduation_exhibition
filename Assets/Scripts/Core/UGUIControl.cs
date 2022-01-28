@@ -39,21 +39,28 @@ public class UGUIControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_judgmentResultOfBall?.gameObject.SetActive(false);
-        m_stageStatusUI?.gameObject.SetActive(false);
-        m_resultUI?.SetActive(false);
+        InitializeUGUI();
 
+        SubscribeEvents();
+    }
+
+    /// <summary>
+    /// 各種イベントを登録する関数.
+    /// Start関数内で呼び出すこと.
+    /// </summary>
+    private void SubscribeEvents()
+    {
         m_startButton.onClick.AddListener(() =>
-            {
-                StartGame();
-                m_startButton.gameObject.SetActive(false);
-            });
+        {
+            StartGame();
+            m_startButton.gameObject.SetActive(false);
+        });
 
         GameFlowManager.Instance.OnCurrentStageChanged.Subscribe((stage) =>
         {
             if (GameFlowManager.Instance.IsLastStage)
             {
-               m_stageNumberText.text = $"FinalStage";
+                m_stageNumberText.text = $"FinalStage";
             }
             else
             {
@@ -71,6 +78,22 @@ public class UGUIControl : MonoBehaviour
         });
     }
 
+
+    /// <summary>
+    /// UGUIの初期化関数.
+    /// ゲームを始めるトリガー以外とランキング表以外は全て非表示にする
+    /// </summary>
+    public void InitializeUGUI()
+    {
+        //ゲーム開始トリガーをOnにする
+        m_startButton.gameObject.SetActive(true);
+
+        //上記のUI以外は全て非表示にする
+        m_judgmentResultOfBall?.gameObject.SetActive(false);
+        m_stageStatusUI?.gameObject.SetActive(false);
+        m_resultUI?.SetActive(false);
+    }
+
     /// <summary>
     /// スタートボタンを押したらゲーム開始する関数.
     /// </summary>
@@ -83,11 +106,13 @@ public class UGUIControl : MonoBehaviour
     }
 
     /// <summary>
-    /// デバック用関数：Oculus上で実行中のアプリケーションを終了する.
+    /// アプリケーションを終了する関数.
     /// </summary>
     public void QuitGame()
     {
 #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else 
         Application.Quit();
 #endif
     }

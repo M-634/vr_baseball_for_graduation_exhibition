@@ -87,6 +87,9 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     #endregion
 
     [Space(10)]
+
+    /// <summary>ゲームを初期化するイベント</summary>
+    [SerializeField] UnityEventWrapperDefault OnInitializeGame = default;
     /// <summary>判定処理が終わった時にWorldSpace上のUIにメッセージを飛ばすイベント</summary>
     [SerializeField] UnityEventWrapperSendText OnDisplayMessage = default;
     /// <summary>ステージクリア後にWorldSpace上のUIにリザルトを飛ばすイベント</summary>
@@ -97,19 +100,32 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     public event Action<BallType[]> OnThrowBall = default;
 
     private HitZoneType m_lastHitZoneType;
-
     private readonly Result m_result = new Result();
     #endregion
 
     #region method
+    private void Start()
+    {
+        OnInitializeGame.AddListener(() =>
+        {
+           InitializeStage();
+           Debug.Log("ゲームを初期化する..");
+         });
+    }
+
     /// <summary>
-    /// 初期化する関数
+    /// ステージを初期化する関数
     /// </summary>
-    private void Initialize()
+    private void InitializeStage()
     {
         GetCurrentStage = m_stageData.GetStageArray[0];
         m_result.Init(true);
         ResetRunner();
+    }
+
+    private void RegisterRanking()
+    {
+        Debug.Log("プレイヤーデータをランキングに登録した");
     }
 
     /// <summary>
@@ -123,8 +139,9 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             EndStage("GameClear", () =>
             {
                 //ランキング登録
-
-                //リスタート
+                RegisterRanking();
+                //ゲーム初期化
+                OnInitializeGame?.Invoke();
             });
         }
         //ステージクリア
@@ -159,7 +176,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
                 callBack.Invoke();
             });
         });
-        Debug.Log(message);
+        //Debug.Log(message);
     }
 
     /// <summary>
@@ -173,7 +190,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         m_lastHitZoneType = HitZoneType.None;
 
         //初めのステージなら初期化する
-        if (isFirstStage) Initialize();
+        if (isFirstStage) InitializeStage();
 
         //初級以外は、残りの球数を減らす
         if (!isFirstBall) LeftBallCount--;
@@ -183,7 +200,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         {
             EndStage("GameOver", () =>
              {
-                 //リスタート
+                 //ゲーム初期化
+                 OnInitializeGame?.Invoke();
              });
             return;
         }
