@@ -9,6 +9,7 @@ public class BGMPlayer : BasePlayer
     {
         base.Start();
         m_audioSource.loop = true;
+        m_audioSource.outputAudioMixerGroup = AudioManager.Instance.GetBGMAudioMixerGroup;
     }
 
     public void PlayBGM(AudioClip audioClip)

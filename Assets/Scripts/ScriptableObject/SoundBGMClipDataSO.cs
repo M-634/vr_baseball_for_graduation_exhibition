@@ -5,7 +5,7 @@ using System.Linq;
 
 
 [CreateAssetMenu(fileName = "SoundBGMData", menuName = "CreateSoundBGMData")]
-public class SoundBGMClipData : ScriptableObject
+public class SoundBGMClipDataSO : ScriptableObject
 {
     [SerializeField] List<BGMClip> m_soundClipList = new List<BGMClip>();
 

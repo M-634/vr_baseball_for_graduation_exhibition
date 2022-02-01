@@ -16,6 +16,7 @@ public class SFXPlayer : BasePlayer
     {
         base.Start();
         m_audioSource.loop = false;
+        m_audioSource.outputAudioMixerGroup = AudioManager.Instance.GetSFXAudioMixerGroup;
     }
 
     /// <summary>

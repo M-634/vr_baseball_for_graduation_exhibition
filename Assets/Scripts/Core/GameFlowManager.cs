@@ -15,7 +15,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     #region field
     #region stage
     [Header("ステージデータ")]
-    [SerializeField] StageData m_stageData = default;
+    [SerializeField] StageDataSO m_stageData = default;
 
     private int m_leftBallCount;
     private Stage m_currentStage = null;
