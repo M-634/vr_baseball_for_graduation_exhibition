@@ -5,29 +5,38 @@ using UnityEngine.Events;
 using System;
 using Cysharp.Threading.Tasks;
 
+//このクラスの責務が多すぎる.暇がある時にリファクタリングしようと思います(優先度は低め)
+
 /// <summary>
 /// 野球のルールに従って,ゲームを進行を管理するクラス
 /// </summary>
 public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
 {
+    #region field
     #region stage
     [Header("ステージデータ")]
-    [SerializeField] StageData m_stageData = default;
+    [SerializeField] StageDataSO m_stageData = default;
 
     private int m_leftBallCount;
+    private Stage m_currentStage = null;
+
     private Subject<int> m_leftBallCountSubject = new Subject<int>();
+    private Subject<Stage> m_currentStageSubject = new Subject<Stage>();
+
+    public bool IsLastStage => GetCurrentStage.stageNumber == m_stageData.GetStageArray.Length - 1;
+    public IObservable<Stage> OnCurrentStageChanged => m_currentStageSubject;
     public IObservable<int> OnLeftBallCountChanged => m_leftBallCountSubject;
 
-    private Stage m_currentStage = null;
-    private Subject<Stage> m_currentStageSubject = new Subject<Stage>();
-    public IObservable<Stage> OnCurrentStageChanged => m_currentStageSubject;
     public int LeftBallCount
     {
         get => m_leftBallCount;
         private set
         {
             m_leftBallCount = value;
-            m_leftBallCountSubject.OnNext(m_leftBallCount);
+            if (m_leftBallCount > -1)
+            {
+                m_leftBallCountSubject.OnNext(m_leftBallCount);
+            }
         }
     }
 
@@ -39,12 +48,11 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //ステージ変更時,ステージ情報を表示するUIの値を初期化する
             m_currentStage = value;
             GetScore = 0;
+            m_result.Init();
             LeftBallCount = m_currentStage.capacityOfBall;
             m_currentStageSubject.OnNext(m_currentStage);
         }
     }
-
-    public bool IsLastStage => GetCurrentStage.stageNumber == m_stageData.GetStageArray.Length - 1;
     #endregion
 
     #region runner
@@ -55,11 +63,18 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     [SerializeField] Transform[] m_basePostions;
     /// <summary>ランナーの速度</summary>
     [SerializeField] float m_moveDuration = 1f;
+    /// <summary>最後のランナーが走り終わってから次のアクションが起こるまでの時間（秒）</summary>
+    [SerializeField] float m_endMoveDuration = 1f;
 
     /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
     int m_getScore = 0;
 
     Subject<int> m_getScoreSubject = new Subject<int>();
+
+    /// <summary>現在出塁しているランナーのリスト</summary>
+    private List<Runner> m_currentRunner = new List<Runner>();
+
+    public Transform GetHomeBase => m_basePostions[0];
     public IObservable<int> OnGetScoreChanged => m_getScoreSubject;
 
     public int GetScore
@@ -71,30 +86,55 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             m_getScoreSubject.OnNext(m_getScore);
         }
     }
-
-    /// <summary>現在出塁しているランナーのリスト</summary>
-    private List<Runner> m_currentRunner = new List<Runner>();
-    public Transform GetHomeBase => m_basePostions[0];
     #endregion
 
     [Space(10)]
+    /// <summary>ホームラン時の特殊な演出を制御するクラス</summary>
+    [SerializeField] HomeRunSoundAndVFX m_homeRunSoundAndVFX;
+
+    [Space(10)]
+
+    [Header("イベント")]
+    /// <summary>ゲームを初期化するイベント</summary>
+    [SerializeField] UnityEventWrapperDefault OnInitializeGame = default;
     /// <summary>判定処理が終わった時にWorldSpace上のUIにメッセージを飛ばすイベント</summary>
     [SerializeField] UnityEventWrapperSendText OnDisplayMessage = default;
+    /// <summary>ステージクリア後にWorldSpace上のUIにリザルトを飛ばすイベント</summary>
+    [SerializeField] UnityEventWrapperDisplayResult OnDisplayResult = default;
+
 
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
     /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
-    public event Action OnThrowBall = default;
+    public event Action<BallType[]> OnThrowBall = default;
 
     private HitZoneType m_lastHitZoneType;
+    private readonly Result m_result = new Result();
+    #endregion
+
+    #region method
+    private void Start()
+    {
+        OnInitializeGame.AddListener(() =>
+        {
+           InitializeStage();
+           Debug.Log("ゲームを初期化する..");
+         });
+    }
 
     /// <summary>
-    /// 初期化する関数
+    /// ステージを初期化する関数
     /// </summary>
-    private void Initialize()
+    private void InitializeStage()
     {
         GetCurrentStage = m_stageData.GetStageArray[0];
+        m_result.Init(true);
         ResetRunner();
+    }
+
+    private void RegisterRanking()
+    {
+        Debug.Log("プレイヤーデータをランキングに登録した");
     }
 
     /// <summary>
@@ -105,18 +145,47 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         //最終ステージクリア
         if (IsLastStage)
         {
-            OnDisplayMessage?.Invoke("GameClear", () => { });
-            Debug.Log("GameClear...");
+            EndStage("GameClear", () =>
+            {
+                //ランキング登録
+                RegisterRanking();
+                //ゲーム初期化
+                OnInitializeGame?.Invoke();
+            });
         }
-        //次のステージへ
+        //ステージクリア
         else
         {
-            OnDisplayMessage?.Invoke("ClearStage", () =>
+            EndStage("ClearStage", () =>
             {
+                //次のステージへ
                 GetCurrentStage = m_stageData.GetStageArray[GetCurrentStage.stageNumber + 1];
                 PlayBall(false, true);
             });
         }
+    }
+
+    /// <summary>
+    /// ステージ終了後,UIへメッセージを飛ばし、リザルトを表示する。
+    /// その後、登録したコールバックを呼び出す関数.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="callBack"></param>
+    private void EndStage(string message, UnityAction callBack)
+    {
+        //メッセージを飛ばす.
+        OnDisplayMessage?.Invoke(message, () =>
+        {
+            //ランナーを削除
+            ResetRunner();
+            //リザルト表示.
+            OnDisplayResult?.Invoke(m_result, () =>
+            {
+                //コールバック
+                callBack.Invoke();
+            });
+        });
+        //Debug.Log(message);
     }
 
     /// <summary>
@@ -130,7 +199,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         m_lastHitZoneType = HitZoneType.None;
 
         //初めのステージなら初期化する
-        if (isFirstStage) Initialize();
+        if (isFirstStage) InitializeStage();
 
         //初級以外は、残りの球数を減らす
         if (!isFirstBall) LeftBallCount--;
@@ -138,13 +207,15 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         //残りの球数がなくなったらゲームオーバー
         if (LeftBallCount < 0)
         {
-            OnDisplayMessage?.Invoke("GameOver", () => { });
-            Debug.Log("Game Over");
+            EndStage("GameOver", () =>
+             {
+                 //ゲーム初期化
+                 OnInitializeGame?.Invoke();
+             });
             return;
         }
-
         //ピッチャーが球を投げる
-        OnThrowBall?.Invoke();
+        OnThrowBall?.Invoke(GetCurrentStage.ballTypes);
     }
 
     /// <summary>
@@ -159,7 +230,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>
     /// 球が動かなくなったら呼ばれるメンバー関数.
     /// </summary>
-    public async void EndMoveBall()
+    /// <param name="endBallPos"></param>
+    public async void EndMoveBall(Vector3 endBallPos)
     {
         //判定結果を出すまで、遅延させる.
         await UniTask.Delay(TimeSpan.FromSeconds(1f), ignoreTimeScale: false);
@@ -174,11 +246,25 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //UIにテキストを送って、プレイボール.
             DisplayMessage(m_lastHitZoneType.ToString(), () => PlayBall());
         }
+        else if(m_lastHitZoneType == HitZoneType.HomeRun)
+        {
+            //UIにテキストを送り、ホームラン演出後にランナーを走らせる.
+            DisplayMessage(m_lastHitZoneType.ToString(), () =>
+            {
+                //ホームラン演出
+                if (m_homeRunSoundAndVFX) m_homeRunSoundAndVFX.Play();
+
+                //ランナーを走らせる
+                MoveRunner((int)m_lastHitZoneType); 
+            });
+        }
         else
         {
             //UIにテキストを送って、ランナーを走らせる.
             DisplayMessage(m_lastHitZoneType.ToString(), () => MoveRunner((int)m_lastHitZoneType));
         }
+        //リザルトを更新する
+        UpdateResult(m_lastHitZoneType, endBallPos);
     }
 
     /// <summary>
@@ -191,6 +277,53 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         OnDisplayMessage?.Invoke(text, callBack);
         Debug.Log(text);
     }
+
+    /// <summary>
+    /// リザルトを更新する関数
+    /// </summary>
+    private void UpdateResult(HitZoneType hitZoneType, Vector3 endBallPos)
+    {
+        //各種カウンターを更新する.
+        if (hitZoneType == HitZoneType.Hit)
+        {
+            m_result.hitCount++;
+        }
+        else if (hitZoneType == HitZoneType.TwoBaseHit)
+        {
+            m_result.twoBaseCount++;
+        }
+        else if (hitZoneType == HitZoneType.ThreeBaseHit)
+        {
+            m_result.threeBaseCount++;
+        }
+        else if (hitZoneType == HitZoneType.HomeRun)
+        {
+            m_result.homeRunCount++;
+        }
+        else if (hitZoneType == HitZoneType.Catcher)
+        {
+            m_result.strikeCount++;
+        }
+        //距離を更新する
+        CalcDistance(endBallPos);
+    }
+
+    /// <summary>
+    /// 最大飛距離と合計飛距離を計算する関数
+    /// </summary>
+    /// <param name="endBallPos"></param>
+    /// <returns></returns>
+    private void CalcDistance(Vector3 endBallPos)
+    {
+        float distance = Vector3.Distance(GetHomeBase.position, endBallPos);
+
+        if (distance > m_result.maxDistance)
+        {
+            m_result.maxDistance = distance;
+        }
+        m_result.sumDistance += distance;
+    }
+
 
 
     /// <summary>
@@ -252,7 +385,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         if (lastRunner)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
-            EndMove();
+            EndMove().Forget();
         }
 
     }
@@ -260,13 +393,22 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>
     /// ランナー処理が終わったら呼ばれる関数.
     /// </summary>
-    private void EndMove()
+    private async UniTask  EndMove()
     {
+        //debug
         Debug.Log("runner　処理が終わった");
+
+        await UniTask.Delay(TimeSpan.FromSeconds(m_endMoveDuration));
+
+        //ホームラン演出があったら止める
+        if (m_homeRunSoundAndVFX) m_homeRunSoundAndVFX.Stop();
+
+        //ステージクリア
         if (GetScore >= GetCurrentStage.clearScore)
         {
             ClearStage();
         }
+        //次の球を投げる
         else
         {
             PlayBall();
@@ -296,5 +438,5 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         }
 
     }
-
+    #endregion
 }

@@ -272,15 +272,15 @@ public class Ball : MonoBehaviour
     /// ãÖéÌÇïœÇ¶ÇÈä÷êî
     /// </summary>
     /// <param name="ballType"></param>
-    public void ChangeBallType(int ballType)
+    public void ChangeBallType(BallType ballType)
     {
-        if (ballType >= 10)
+        if ((int)ballType >= 10)
         {
             m_isMagicBall = true;
 
             m_rb.useGravity = false;
         }
-        m_ballType = (BallType)ballType;
+        m_ballType = ballType;
     }
 
     /// <summary>
@@ -322,26 +322,9 @@ public class Ball : MonoBehaviour
         m_ballTrail.Clear();
         if (GameFlowManager.Instance != null)
         {
-            GameFlowManager.Instance.EndMoveBall();
+            GameFlowManager.Instance.EndMoveBall(transform.position);
         }
         onHitBat = false;
         m_rb.useGravity = true;
     }
-}
-
-public enum BallType
-{
-    Straight = 0,
-    Curve = 1,
-    Slider = 2,
-    Shoot = 3,
-    Fork = 4,
-    Sinker = 5,
-    ChangeUp = 6,
-    HighSpeedStraight = 7,
-    RizeBall = 8,
-    CutBall = 9,
-    WhiteBall = 10,
-    WanderWhiteBall = 11,
-    DragonflyBall = 12
 }

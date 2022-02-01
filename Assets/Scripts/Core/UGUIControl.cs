@@ -14,8 +14,9 @@ public class UGUIControl : MonoBehaviour
     /// <summary>球の判定結果を表示するテキスト</summary>
     [SerializeField] TextMeshProUGUI m_judgmentResultOfBall = default;
 
-    /// <summary>スタートボタン</summary>
+    [Header("ゲーム開始トリガー")]
     [SerializeField] Button m_startButton = default;
+    [SerializeField] Button m_startButtonOnVR = default;
 
     [Header("StageSatus")]
     /// <summary>ゲーム中の各ステージのステータスをUIに表示するオブジェット</summary>
@@ -29,26 +30,51 @@ public class UGUIControl : MonoBehaviour
     /// <summary>各ステージのピッチャーの球数の残りを表示するテキスト</summary>
     [SerializeField] TextMeshProUGUI m_leftBallText;
 
+    [Header("Result")]
+    [SerializeField] GameObject m_resultUI;
+    [SerializeField] TextMeshProUGUI m_resultText;
+
     [Header("デバック用テキスト")]
     [SerializeField] TextMeshProUGUI m_displayHeadSpeedOfBatText = default;
 
     // Start is called before the first frame update
     void Start()
     {
-        m_judgmentResultOfBall?.gameObject.SetActive(false);
-        m_stageStatusUI?.gameObject.SetActive(false);
+        InitializeUGUI();
 
+        SubscribeEvents();
+
+        //タイトルのBGM
+        AudioManager.Instance.PlayBGM(KindOfBGM.Title);
+    }
+
+    /// <summary>
+    /// 各種イベントを登録する関数.
+    /// Start関数内で呼び出すこと.
+    /// </summary>
+    private void SubscribeEvents()
+    {
+# if UNITY_EDITOR
+        m_startButtonOnVR.gameObject.SetActive(false);
         m_startButton.onClick.AddListener(() =>
-            {
-                StartGame();
-                m_startButton.gameObject.SetActive(false);
-            });
+        {
+            StartGame();
+            m_startButton.gameObject.SetActive(false);
+        });
+#else
+        m_startButton.gameObject.SetActive(false);
+        m_startButtonOnVR.onClick.AddListener(() =>
+        {
+            StartGame();
+            m_startButtonOnVR.gameObject.SetActive(false);
+        });
+#endif
 
         GameFlowManager.Instance.OnCurrentStageChanged.Subscribe((stage) =>
         {
             if (GameFlowManager.Instance.IsLastStage)
             {
-               m_stageNumberText.text = $"FinalStage";
+                m_stageNumberText.text = $"FinalStage";
             }
             else
             {
@@ -66,23 +92,53 @@ public class UGUIControl : MonoBehaviour
         });
     }
 
+
+    /// <summary>
+    /// UGUIの初期化関数.
+    /// ゲームを始めるトリガー以外とランキング表以外は全て非表示にする
+    /// </summary>
+    public void InitializeUGUI()
+    {
+        //ゲーム開始トリガーをOnにする
+        m_startButton.gameObject.SetActive(true);
+
+        //上記のUI以外は全て非表示にする
+        m_judgmentResultOfBall?.gameObject.SetActive(false);
+        m_stageStatusUI?.gameObject.SetActive(false);
+        m_resultUI?.SetActive(false);
+    }
+
     /// <summary>
     /// スタートボタンを押したらゲーム開始する関数.
     /// </summary>
     public void StartGame()
     {
+        //タイトルBGMを止める
+        AudioManager.Instance.StopBGM();
+
         //ステージ情報UIを表示する
         m_stageStatusUI?.gameObject.SetActive(true);
-        //ステージ１開始！
-        GameFlowManager.Instance.PlayBall(true, true);
+
+        //ゲーム開始のSFX
+        AudioManager.Instance.PlaySFX(KindOfSFX.PlayBall,
+            () =>
+            {
+                //SFX終了後のコールバック
+                //ステージ１開始！
+                GameFlowManager.Instance.PlayBall(true, true);
+                AudioManager.Instance.PlayBGM(KindOfBGM.InGame);
+            });
+
     }
 
     /// <summary>
-    /// デバック用関数：Oculus上で実行中のアプリケーションを終了する.
+    /// アプリケーションを終了する関数.
     /// </summary>
     public void QuitGame()
     {
 #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
 #endif
     }
@@ -104,6 +160,30 @@ public class UGUIControl : MonoBehaviour
 
             m_judgmentResultOfBall.gameObject.SetActive(false);
         }
+        callBack?.Invoke();
+    }
+
+    /// <summary>
+    /// WorldSpace上にステージクリア時のリザルトを表示する関数.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <param name="callBack"></param>
+    public async void DisplayResult(Result result, UnityAction callBack = null)
+    {
+        m_resultUI?.SetActive(true);
+
+        m_resultText.text = $"ヒット: {result.hitCount}本\n" +
+            $"ツーラン: {result.twoBaseCount}本\n" +
+            $"スリーラン: {result.threeBaseCount}本\n" +
+            $"ホームラン: {result.homeRunCount}本\n" +
+            $"ストライク: {result.strikeCount}数\n" +
+            $"最大距離: {result.maxDistance}m\n" +
+            $"合計距離: {result.sumDistance}m\n" +
+            $"報酬金額: {result.amountOfRemuneration}円\n" +
+            $"累計報酬金額: {result.accumulatedRemuneration}円\n";
+
+        await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
+        m_resultUI?.SetActive(false);
         callBack?.Invoke();
     }
 
