@@ -14,8 +14,9 @@ public class UGUIControl : MonoBehaviour
     /// <summary>球の判定結果を表示するテキスト</summary>
     [SerializeField] TextMeshProUGUI m_judgmentResultOfBall = default;
 
-    /// <summary>スタートボタン</summary>
+    [Header("ゲーム開始トリガー")]
     [SerializeField] Button m_startButton = default;
+    [SerializeField] Button m_startButtonOnVR = default;
 
     [Header("StageSatus")]
     /// <summary>ゲーム中の各ステージのステータスをUIに表示するオブジェット</summary>
@@ -53,11 +54,21 @@ public class UGUIControl : MonoBehaviour
     /// </summary>
     private void SubscribeEvents()
     {
+# if UNITY_EDITOR
+        m_startButtonOnVR.gameObject.SetActive(false);
         m_startButton.onClick.AddListener(() =>
         {
             StartGame();
             m_startButton.gameObject.SetActive(false);
         });
+#else
+        m_startButton.gameObject.SetActive(false);
+        m_startButtonOnVR.onClick.AddListener(() =>
+        {
+            StartGame();
+            m_startButtonOnVR.gameObject.SetActive(false);
+        });
+#endif
 
         GameFlowManager.Instance.OnCurrentStageChanged.Subscribe((stage) =>
         {
@@ -127,7 +138,7 @@ public class UGUIControl : MonoBehaviour
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-#else 
+#else
         Application.Quit();
 #endif
     }
