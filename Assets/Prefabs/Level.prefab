@@ -46,7 +46,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &190395964
 Transform:
   m_ObjectHideFlags: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f9e8ff960e5b6441aad125e73fa1967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_rootObject: {fileID: 190395963}
+  m_rootObject: {fileID: 393530277}
   m_fireFlowerSFX: {fileID: 393530279}
   m_cheerSFX: {fileID: 850291937}
 --- !u!1 &210739815
@@ -355,7 +355,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &393530278
 Transform:
   m_ObjectHideFlags: 0

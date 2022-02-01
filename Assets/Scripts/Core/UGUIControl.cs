@@ -42,6 +42,9 @@ public class UGUIControl : MonoBehaviour
         InitializeUGUI();
 
         SubscribeEvents();
+
+        //タイトルのBGM
+        AudioManager.Instance.PlayBGM(KindOfBGM.Title);
     }
 
     /// <summary>
@@ -99,10 +102,22 @@ public class UGUIControl : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
+        //タイトルBGMを止める
+        AudioManager.Instance.StopBGM();
+
         //ステージ情報UIを表示する
         m_stageStatusUI?.gameObject.SetActive(true);
-        //ステージ１開始！
-        GameFlowManager.Instance.PlayBall(true, true);
+
+        //ゲーム開始のSFX
+        AudioManager.Instance.PlaySFX(KindOfSFX.PlayBall,
+            () =>
+            {
+                //SFX終了後のコールバック
+                //ステージ１開始！
+                GameFlowManager.Instance.PlayBall(true, true);
+                AudioManager.Instance.PlayBGM(KindOfBGM.InGame);
+            });
+
     }
 
     /// <summary>

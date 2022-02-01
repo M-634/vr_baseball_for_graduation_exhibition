@@ -17,6 +17,7 @@ public class BatControl : MonoBehaviour, IBallHitObjet
 
     /// <summary>バットの打撃音源</summary>
     [SerializeField] SFXPlayer m_sfxBattingPlayer;
+    [SerializeField] ParticleSystem m_hitVFX;
 
     [Header("ここより下の変数は、要調整が必要なもの")]
     /// <summary>バットの反発係数の最低値</summary>
@@ -114,7 +115,14 @@ public class BatControl : MonoBehaviour, IBallHitObjet
         }
 
         //打撃音を鳴らす.バットの芯との距離に応じてpitchを変える.
-        m_sfxBattingPlayer.PlaySetPitch(hitCoreRatio);
+        if(m_sfxBattingPlayer) m_sfxBattingPlayer.PlaySetPitch(hitCoreRatio);
+
+        //打撃時のエフェクトを出す
+        if (m_hitVFX)
+        {
+            m_hitVFX.transform.position = hitObjectInfo.point;
+            m_hitVFX.Play();
+        }
     }
 
     private float BattingPower(RaycastHit hitObjectInfo, float ballSpeed)

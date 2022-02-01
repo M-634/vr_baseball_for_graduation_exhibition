@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SoundBGMData
   m_EditorClassIdentifier: 
   m_soundClipList:
-  - m_kindOfBGN: 0
-    m_clip: {fileID: 0}
   - m_kindOfBGN: 1
     m_clip: {fileID: 0}
+  - m_kindOfBGN: 2
+    m_clip: {fileID: 8300000, guid: f66c2dfce17826b438fe515348f554fa, type: 3}

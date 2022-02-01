@@ -1,41 +1,22 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
-/// Oculus用、3D空間上での効果音プレイヤー.
-/// Oculus Audio SDKをインポートしてください.
+/// 効果音プレイヤー.
 /// </summary>
-[RequireComponent(typeof(AudioSource), (typeof(ONSPAudioSource)))]
-public class SFXPlayer : MonoBehaviour
+public class SFXPlayer : BasePlayer
 {
     /// <summary>このコンポーネントをアタッチしているオブジェクトが出す効果音を指定する</summary>
     [SerializeField] KindOfSFX m_kindOfSFX;
 
-   [SerializeField] AudioSource m_audioSource;
-   [SerializeField] ONSPAudioSource m_ONSPAudioSource;
-
-    /// <summary>
-    /// このコンポーネントをアタッチされた時に呼ばれる関数
-    /// </summary>
-    private void Reset()
+    protected override void Start()
     {
-        m_audioSource = GetComponent<AudioSource>();
-        m_ONSPAudioSource = GetComponent<ONSPAudioSource>();
-    }
-
-
-    private void Start()
-    {
-        //AudioSourceの設定
-        m_audioSource.playOnAwake = false;
+        base.Start();
         m_audioSource.loop = false;
-        m_audioSource.spatialBlend = 0f;
-
-        //ONSPAudioSourceの設定
-        m_ONSPAudioSource.EnableSpatialization = true;
     }
-
 
     /// <summary>
     /// SFXを再生する.
@@ -47,7 +28,21 @@ public class SFXPlayer : MonoBehaviour
             m_audioSource.pitch = 1f;
             m_audioSource.Play(audioClip);
         }
+    }
 
+    /// <summary>
+    /// SFXを再生させ、終わったらコールバックを呼ぶ関数.
+    /// </summary>
+    public async UniTaskVoid PlaySeCallBack(AudioClip audioClip, UnityAction callback = null)
+    {
+        m_audioSource.pitch = 1f;
+        m_audioSource.Play(audioClip);
+
+        //再生が終わるまで待機
+        await UniTask.WaitUntil(() => m_audioSource.isPlaying == false);
+
+        //コールバック
+        callback?.Invoke();
     }
 
     /// <summary>

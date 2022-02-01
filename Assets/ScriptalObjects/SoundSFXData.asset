@@ -28,7 +28,7 @@ MonoBehaviour:
   - m_kindOfSFX: 6
     m_clip: {fileID: 0}
   - m_kindOfSFX: 7
-    m_clip: {fileID: 0}
+    m_clip: {fileID: 8300000, guid: 5bd5bcac504420e4b8ba75058486b89f, type: 3}
   - m_kindOfSFX: 8
     m_clip: {fileID: 0}
   - m_kindOfSFX: 9

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-
+using UnityEngine.Events;
 
 /// <summary>
 /// AudioSourceの拡張クラス.
@@ -24,6 +24,7 @@ public static class AudioSourceExtensions
         }
     }
 
+  
     public static void PlayWithFadeIn(this AudioSource audioSource, AudioClip audioClip = null, float fadeTime = 0.1f, float endVolume = 1.0f)
     {
         //目標ボリュームを0~1に補正
