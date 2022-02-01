@@ -4,6 +4,9 @@ using UnityEngine;
 using DG.Tweening;
 
 
+/// <summary>
+/// AudioSourceの拡張クラス.
+/// </summary>
 public static class AudioSourceExtensions
 {
     /// <summary>

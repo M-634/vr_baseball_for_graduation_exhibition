@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6013504ca9682b4b942f6b442b8d06f, type: 3}
+  m_Name: SoundSFXData
+  m_EditorClassIdentifier: 
+  m_soundClipList:
+  - m_kindOfSFX: 0
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 1
+    m_clip: {fileID: 8300000, guid: e975bca593be14d4782244e38ba6ac6e, type: 3}
+  - m_kindOfSFX: 2
+    m_clip: {fileID: 8300000, guid: bc383dcf9f8d7ea45a20e11aa926ccae, type: 3}
+  - m_kindOfSFX: 3
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 4
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 5
+    m_clip: {fileID: 8300000, guid: 5c1d631ed72444949a985cf12a9167b6, type: 3}
+  - m_kindOfSFX: 6
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 7
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 8
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 9
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 10
+    m_clip: {fileID: 0}

@@ -114,7 +114,7 @@ public class BatControl : MonoBehaviour, IBallHitObjet
         }
 
         //‘ÅŒ‚‰¹‚ğ–Â‚ç‚·.ƒoƒbƒg‚Ìc‚Æ‚Ì‹——£‚É‰‚¶‚Äpitch‚ğ•Ï‚¦‚é.
-        m_sfxBattingPlayer.PlayFirstAudioClipSetPitch(hitCoreRatio);
+        m_sfxBattingPlayer.PlaySetPitch(hitCoreRatio);
     }
 
     private float BattingPower(RaycastHit hitObjectInfo, float ballSpeed)

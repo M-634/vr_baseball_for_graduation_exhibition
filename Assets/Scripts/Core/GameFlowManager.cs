@@ -63,6 +63,8 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     [SerializeField] Transform[] m_basePostions;
     /// <summary>ランナーの速度</summary>
     [SerializeField] float m_moveDuration = 1f;
+    /// <summary>最後のランナーが走り終わってから次のアクションが起こるまでの時間（秒）</summary>
+    [SerializeField] float m_endMoveDuration = 1f;
 
     /// <summary>ホームベースに帰ってきたランナーを数える変数</summary>
     int m_getScore = 0;
@@ -87,13 +89,20 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     #endregion
 
     [Space(10)]
+    /// <summary>ホームラン時の特殊な演出を制御するクラス</summary>
+    [SerializeField] HomeRunSoundAndVFX m_homeRunSoundAndVFX;
 
+    [Space(10)]
+
+    [Header("イベント")]
     /// <summary>ゲームを初期化するイベント</summary>
     [SerializeField] UnityEventWrapperDefault OnInitializeGame = default;
     /// <summary>判定処理が終わった時にWorldSpace上のUIにメッセージを飛ばすイベント</summary>
     [SerializeField] UnityEventWrapperSendText OnDisplayMessage = default;
     /// <summary>ステージクリア後にWorldSpace上のUIにリザルトを飛ばすイベント</summary>
     [SerializeField] UnityEventWrapperDisplayResult OnDisplayResult = default;
+
+
     ///<summary>球の反発係数:プロ野球で使われる公式球を参考にしています</summary> 
     public const float CoefficientOfRestitution = 0.4134f;
     /// <summary>ピッチャーがボールを投げる時に発火されるイベント変数</summary>
@@ -237,6 +246,18 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //UIにテキストを送って、プレイボール.
             DisplayMessage(m_lastHitZoneType.ToString(), () => PlayBall());
         }
+        else if(m_lastHitZoneType == HitZoneType.HomeRun)
+        {
+            //UIにテキストを送り、ホームラン演出後にランナーを走らせる.
+            DisplayMessage(m_lastHitZoneType.ToString(), () =>
+            {
+                //ホームラン演出
+                if (m_homeRunSoundAndVFX) m_homeRunSoundAndVFX.Play();
+
+                //ランナーを走らせる
+                MoveRunner((int)m_lastHitZoneType); 
+            });
+        }
         else
         {
             //UIにテキストを送って、ランナーを走らせる.
@@ -364,7 +385,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         if (lastRunner)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(m_moveDuration));
-            EndMove();
+            EndMove().Forget();
         }
 
     }
@@ -372,13 +393,22 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     /// <summary>
     /// ランナー処理が終わったら呼ばれる関数.
     /// </summary>
-    private void EndMove()
+    private async UniTask  EndMove()
     {
+        //debug
         Debug.Log("runner　処理が終わった");
+
+        await UniTask.Delay(TimeSpan.FromSeconds(m_endMoveDuration));
+
+        //ホームラン演出があったら止める
+        if (m_homeRunSoundAndVFX) m_homeRunSoundAndVFX.Stop();
+
+        //ステージクリア
         if (GetScore >= GetCurrentStage.clearScore)
         {
             ClearStage();
         }
+        //次の球を投げる
         else
         {
             PlayBall();
