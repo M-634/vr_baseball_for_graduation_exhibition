@@ -54,21 +54,29 @@ public class UGUIControl : MonoBehaviour
     /// </summary>
     private void SubscribeEvents()
     {
-# if UNITY_EDITOR
-        m_startButtonOnVR.gameObject.SetActive(false);
-        m_startButton.onClick.AddListener(() =>
+        //debug
+        if (OculusDebugManager.Instance.DebugOculusLink)
         {
-            StartGame();
             m_startButton.gameObject.SetActive(false);
-        });
-#else
-        m_startButton.gameObject.SetActive(false);
-        m_startButtonOnVR.onClick.AddListener(() =>
+            m_startButtonOnVR.gameObject.SetActive(true);
+            m_startButtonOnVR.onClick.AddListener(() =>
+            {
+                StartGame();
+                m_startButtonOnVR.gameObject.SetActive(false);
+            });
+        }
+        else
         {
-            StartGame();
             m_startButtonOnVR.gameObject.SetActive(false);
-        });
-#endif
+            m_startButton.gameObject.SetActive(true);
+            m_startButton.onClick.AddListener(() =>
+            {
+                StartGame();
+                m_startButton.gameObject.SetActive(false);
+            });
+        }
+
+
 
         GameFlowManager.Instance.OnCurrentStageChanged.Subscribe((stage) =>
         {

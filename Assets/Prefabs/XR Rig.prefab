@@ -128,6 +128,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_barycenter: {fileID: 6580779710830366007}
   m_grip: {fileID: 6580779710610880100}
+  m_sfxBattingPlayer: {fileID: 0}
+  m_hitVFX: {fileID: 0}
   m_minValueOfRepulsionCoeffiecient: 0
   OnSwingAction:
     m_PersistentCalls:
@@ -146,6 +148,7 @@ MonoBehaviour:
         m_CallState: 2
   m_debugRotatePower: 0
   m_isJustKeepHittingBallBack: 0
+  hitCoreRatio: 0
 --- !u!64 &6580779709794328055
 MeshCollider:
   m_ObjectHideFlags: 0
