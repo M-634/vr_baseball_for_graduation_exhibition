@@ -108,6 +108,10 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
         {
             m_SFXPlayer.PlaySeCallBack(audioClip, callBack).Forget();
         }
+        else
+        {
+            callBack?.Invoke(); 
+        }
     }
 
     /// <summary>
@@ -120,6 +124,11 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
         {
             m_BGMPlayer.PlayBGM(audioClip);
         }
+    }
+
+    public void StopBGM()
+    {
+        if (m_BGMPlayer) m_BGMPlayer.StopBGM();
     }
 
     /// <summary>
@@ -176,10 +185,5 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
 
         audioClip = getClip;
         return true;
-    }
-
-    public void StopBGM()
-    {
-        if (m_BGMPlayer) m_BGMPlayer.StopBGM();
     }
 }

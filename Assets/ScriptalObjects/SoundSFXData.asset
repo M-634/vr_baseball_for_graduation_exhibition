@@ -35,3 +35,7 @@ MonoBehaviour:
     m_clip: {fileID: 0}
   - m_kindOfSFX: 10
     m_clip: {fileID: 0}
+  - m_kindOfSFX: 11
+    m_clip: {fileID: 0}
+  - m_kindOfSFX: 12
+    m_clip: {fileID: 0}

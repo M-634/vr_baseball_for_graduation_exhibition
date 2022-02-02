@@ -33,6 +33,8 @@ public class UGUIControl : MonoBehaviour
     [Header("Result")]
     [SerializeField] GameObject m_resultUI;
     [SerializeField] TextMeshProUGUI m_resultText;
+    [SerializeField] TextMeshProUGUI m_additiveResultText;
+    [SerializeField] float m_resultDisplayDuration = 2f;
 
     [Header("デバック用テキスト")]
     [SerializeField] TextMeshProUGUI m_displayHeadSpeedOfBatText = default;
@@ -57,8 +59,6 @@ public class UGUIControl : MonoBehaviour
         //debug
         if (OculusDebugManager.Instance.DebugOculusLink)
         {
-            m_startButton.gameObject.SetActive(false);
-            m_startButtonOnVR.gameObject.SetActive(true);
             m_startButtonOnVR.onClick.AddListener(() =>
             {
                 StartGame();
@@ -67,8 +67,6 @@ public class UGUIControl : MonoBehaviour
         }
         else
         {
-            m_startButtonOnVR.gameObject.SetActive(false);
-            m_startButton.gameObject.SetActive(true);
             m_startButton.onClick.AddListener(() =>
             {
                 StartGame();
@@ -100,6 +98,20 @@ public class UGUIControl : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// ゲーム開始するために必要なトリガーをオンにする関数.
+    /// </summary>
+    public void OnGameStartTrigger()
+    {
+        if (OculusDebugManager.Instance.DebugOculusLink)
+        {
+            m_startButtonOnVR.gameObject.SetActive(true);
+        }
+        else
+        {
+            m_startButton.gameObject.SetActive(true);
+        }
+    }
 
     /// <summary>
     /// UGUIの初期化関数.
@@ -108,7 +120,7 @@ public class UGUIControl : MonoBehaviour
     public void InitializeUGUI()
     {
         //ゲーム開始トリガーをOnにする
-        m_startButton.gameObject.SetActive(true);
+        OnGameStartTrigger();
 
         //上記のUI以外は全て非表示にする
         m_judgmentResultOfBall?.gameObject.SetActive(false);
@@ -124,6 +136,8 @@ public class UGUIControl : MonoBehaviour
         //タイトルBGMを止める
         AudioManager.Instance.StopBGM();
 
+        //ステージ初期化
+        GameFlowManager.Instance.InitializeStage();
         //ステージ情報UIを表示する
         m_stageStatusUI?.gameObject.SetActive(true);
 
@@ -133,7 +147,7 @@ public class UGUIControl : MonoBehaviour
             {
                 //SFX終了後のコールバック
                 //ステージ１開始！
-                GameFlowManager.Instance.PlayBall(true, true);
+                GameFlowManager.Instance.PlayBall(true);
                 AudioManager.Instance.PlayBGM(KindOfBGM.InGame);
             });
 
@@ -159,6 +173,7 @@ public class UGUIControl : MonoBehaviour
     /// <param name="callBack"></param>
     public async void DisplayMessage(string message, UnityAction callBack = null)
     {
+        m_stageStatusUI?.SetActive(false);
         if (m_judgmentResultOfBall)
         {
             m_judgmentResultOfBall.gameObject.SetActive(true);
@@ -167,6 +182,7 @@ public class UGUIControl : MonoBehaviour
             await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
 
             m_judgmentResultOfBall.gameObject.SetActive(false);
+            m_stageStatusUI?.SetActive(true);
         }
         callBack?.Invoke();
     }
@@ -178,20 +194,23 @@ public class UGUIControl : MonoBehaviour
     /// <param name="callBack"></param>
     public async void DisplayResult(Result result, UnityAction callBack = null)
     {
+        m_stageStatusUI?.SetActive(false);
         m_resultUI?.SetActive(true);
 
         m_resultText.text = $"ヒット: {result.hitCount}本\n" +
             $"ツーラン: {result.twoBaseCount}本\n" +
             $"スリーラン: {result.threeBaseCount}本\n" +
             $"ホームラン: {result.homeRunCount}本\n" +
-            $"ストライク: {result.strikeCount}数\n" +
-            $"最大距離: {result.maxDistance}m\n" +
+            $"ストライク: {result.strikeCount}数\n";
+
+        m_additiveResultText.text =  $"最大距離: {result.maxDistance}m\n" +
             $"合計距離: {result.sumDistance}m\n" +
             $"報酬金額: {result.amountOfRemuneration}円\n" +
             $"累計報酬金額: {result.accumulatedRemuneration}円\n";
 
-        await UniTask.Delay(System.TimeSpan.FromSeconds(2f), ignoreTimeScale: false);
+        await UniTask.Delay(System.TimeSpan.FromSeconds(m_resultDisplayDuration), ignoreTimeScale: false);
         m_resultUI?.SetActive(false);
+        m_stageStatusUI?.SetActive(false);
         callBack?.Invoke();
     }
 
