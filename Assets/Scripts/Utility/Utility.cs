@@ -34,7 +34,7 @@ public class UnityEventWrapperFloat: UnityEvent<float> { }
 public class UnityEventWrapperSendText : UnityEvent<string, UnityAction> { }
 
 [Serializable]
-public class UnityEventWrapperDisplayResult : UnityEvent<Result, UnityAction> { }
+public class UnityEventWrapperDisplayResult : UnityEvent<StageResult, UnityAction> { }
 #endregion
 
 #region enum

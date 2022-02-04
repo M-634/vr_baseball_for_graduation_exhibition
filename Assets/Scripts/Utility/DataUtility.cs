@@ -20,10 +20,10 @@ public class Stage
 
 
 /// <summary>
-/// リザルト.
+/// プレイヤーが1ステージプレイした時のリザルト.
 /// </summary>
 [Serializable]
-public class Result
+public class StageResult
 {
     /// <summary>ヒット</summary>
     public int hitCount;
@@ -68,6 +68,27 @@ public class Result
         {
             accumulatedRemuneration = 0;
         }
+    }
+
+    /// <summary>
+    /// ステージクリア時に、呼ばれる関数.
+    /// </summary>
+    public void OnStageClear()
+    {
+        //報酬金額を計算
+        CalcRemuneration();
+
+        //累計報酬金額に上乗せする.
+        accumulatedRemuneration += amountOfRemuneration;
+    }
+
+    /// <summary>
+    /// 報酬金額を各結果から計算する関数
+    /// </summary>
+    private void CalcRemuneration()
+    {
+        //計算方式は未定
+       
     }
 }
 

@@ -57,20 +57,20 @@ public class UGUIControl : MonoBehaviour
     private void SubscribeEvents()
     {
         //debug
-        if (OculusDebugManager.Instance.DebugOculusLink)
-        {
-            m_startButtonOnVR.onClick.AddListener(() =>
-            {
-                StartGame();
-                m_startButtonOnVR.gameObject.SetActive(false);
-            });
-        }
-        else
+        if (OculusDebugManager.Instance.DebugEditorMode)
         {
             m_startButton.onClick.AddListener(() =>
             {
                 StartGame();
                 m_startButton.gameObject.SetActive(false);
+            });
+        }
+        else
+        {
+            m_startButtonOnVR.onClick.AddListener(() =>
+            {
+                StartGame();
+                m_startButtonOnVR.gameObject.SetActive(false);
             });
         }
 
@@ -103,13 +103,13 @@ public class UGUIControl : MonoBehaviour
     /// </summary>
     public void OnGameStartTrigger()
     {
-        if (OculusDebugManager.Instance.DebugOculusLink)
+        if (OculusDebugManager.Instance.DebugEditorMode)
         {
-            m_startButtonOnVR.gameObject.SetActive(true);
+            m_startButton.gameObject.SetActive(true);
         }
         else
         {
-            m_startButton.gameObject.SetActive(true);
+            m_startButtonOnVR.gameObject.SetActive(true);
         }
     }
 
@@ -192,7 +192,7 @@ public class UGUIControl : MonoBehaviour
     /// </summary>
     /// <param name="result"></param>
     /// <param name="callBack"></param>
-    public async void DisplayResult(Result result, UnityAction callBack = null)
+    public async void DisplayResult(StageResult result, UnityAction callBack = null)
     {
         m_stageStatusUI?.SetActive(false);
         m_resultUI?.SetActive(true);
@@ -203,7 +203,7 @@ public class UGUIControl : MonoBehaviour
             $"ƒz[ƒ€ƒ‰ƒ“: {result.homeRunCount}–{\n" +
             $"ƒXƒgƒ‰ƒCƒN: {result.strikeCount}”\n";
 
-        m_additiveResultText.text =  $"Å‘å‹——£: {result.maxDistance}m\n" +
+        m_additiveResultText.text = $"Å‘å‹——£: {result.maxDistance}m\n" +
             $"‡Œv‹——£: {result.sumDistance}m\n" +
             $"•ñV‹àŠz: {result.amountOfRemuneration}‰~\n" +
             $"—İŒv•ñV‹àŠz: {result.accumulatedRemuneration}‰~\n";

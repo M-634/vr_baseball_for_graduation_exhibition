@@ -48,7 +48,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //ステージ変更時,ステージ情報を表示するUIの値を初期化する
             m_currentStage = value;
             GetScore = 0;
-            m_result.Init();
+            m_stageResult.Init();
             LeftBallCount = m_currentStage.capacityOfBall;
             m_currentStageSubject.OnNext(m_currentStage);
         }
@@ -110,7 +110,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     public event Action<BallType[]> OnThrowBall = default;
 
     private HitZoneType m_lastHitZoneType;
-    private readonly Result m_result = new Result();
+    private readonly StageResult m_stageResult = new StageResult();
     #endregion
 
     #region method
@@ -129,7 +129,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     public void InitializeStage()
     {
         GetCurrentStage = m_stageData.GetStageArray[0];
-        m_result.Init(true);
+        m_stageResult.Init(true);
         ResetRunner();
     }
 
@@ -158,7 +158,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
             //ゲームクリア時のSFX
             AudioManager.Instance.PlaySFX(KindOfSFX.GameClear);
             //ゲームクリアテキストを表示させ、リザルト表示後にランキング判定
-            OnDisplayMessage?.Invoke("GameClear", () => OnDisplayResult?.Invoke(m_result, RegisterRanking));
+            OnDisplayMessage?.Invoke("GameClear", () => OnDisplayResult?.Invoke(m_stageResult, RegisterRanking));
         }
         //ステージクリア
         else
@@ -190,7 +190,7 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         OnDisplayMessage?.Invoke(message, () =>
         {
             //リザルト表示.
-            OnDisplayResult?.Invoke(m_result, () =>
+            OnDisplayResult?.Invoke(m_stageResult, () =>
             {
                 //コールバック
                 callBack.Invoke();
@@ -298,23 +298,23 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
         //各種カウンターを更新する.
         if (hitZoneType == HitZoneType.Hit)
         {
-            m_result.hitCount++;
+            m_stageResult.hitCount++;
         }
         else if (hitZoneType == HitZoneType.TwoBaseHit)
         {
-            m_result.twoBaseCount++;
+            m_stageResult.twoBaseCount++;
         }
         else if (hitZoneType == HitZoneType.ThreeBaseHit)
         {
-            m_result.threeBaseCount++;
+            m_stageResult.threeBaseCount++;
         }
         else if (hitZoneType == HitZoneType.HomeRun)
         {
-            m_result.homeRunCount++;
+            m_stageResult.homeRunCount++;
         }
         else if (hitZoneType == HitZoneType.Catcher)
         {
-            m_result.strikeCount++;
+            m_stageResult.strikeCount++;
         }
         //距離を更新する
         CalcDistance(endBallPos);
@@ -329,11 +329,11 @@ public class GameFlowManager : SingletonMonoBehaviour<GameFlowManager>
     {
         float distance = Vector3.Distance(GetHomeBase.position, endBallPos);
 
-        if (distance > m_result.maxDistance)
+        if (distance > m_stageResult.maxDistance)
         {
-            m_result.maxDistance = distance;
+            m_stageResult.maxDistance = distance;
         }
-        m_result.sumDistance += distance;
+        m_stageResult.sumDistance += distance;
     }
 
 

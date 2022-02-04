@@ -1658,6 +1658,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pitcher (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1865274847714477572, guid: b20d77e202ada6e4b94ef4c8559bc251, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1865274847714477627, guid: b20d77e202ada6e4b94ef4c8559bc251, type: 3}
       propertyPath: m_ball
       value: 
@@ -9890,7 +9894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a32340d0350e7d347ae314fe02120ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_debugOculusLink: 1
+  m_debugEditorMode: 0
   debugCamera: {fileID: 1195572198}
   XRRig: {fileID: 2059509978}
 --- !u!1 &2136260279
