@@ -9753,6 +9753,7 @@ GameObject:
   - component: {fileID: 2133114786}
   - component: {fileID: 2133114784}
   - component: {fileID: 2133114785}
+  - component: {fileID: 2133114787}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -9897,6 +9898,18 @@ MonoBehaviour:
   m_debugEditorMode: 0
   debugCamera: {fileID: 1195572198}
   XRRig: {fileID: 2059509978}
+--- !u!114 &2133114787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2133114782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a76d5669c86c444b854eca31fc01ef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2136260279
 GameObject:
   m_ObjectHideFlags: 0
